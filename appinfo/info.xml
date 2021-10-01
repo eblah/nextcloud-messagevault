@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<info xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+    <id>smsbackupvault</id>
+    <name>Sms Backup Vault</name>
+    <summary>SMS Backup Vault</summary>
+    <description><![CDATA[Backup SMS, RCS, and MMS messages and attachments.]]></description>
+    <version>0.0.1</version>
+    <licence>agpl</licence>
+    <author mail="justin@eblah.com" homepage="https://www.eblah.com">Justin Osborne</author>
+    <namespace>SmsBackupVault</namespace>
+    <category>organization</category>
+    <category>search</category>
+    <category>social</category>
+    <category>tools</category>
+    <bugs>https://github.com/eblah/nextcloud-sms-backup-vault/issues</bugs>
+    <dependencies>
+        <nextcloud min-version="15" max-version="15"/>
+    </dependencies>
+    <navigations>
+        <navigation>
+            <name>SMS Vault</name>
+            <route>smsbackupvault.page.index</route>
+        </navigation>
+    </navigations>
+</info>

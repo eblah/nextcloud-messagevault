@@ -1,0 +1,30 @@
+sms_address
+id
+user_id
+address
+name
+
+sms_thread
+id
+user_id
+name (combine all names, separated by comma)
+
+sms_thread_address
+thread_id
+address_id
+
+sms_message
+id
+thread_id
+address_id
+timestamp
+send_rec
+subject
+body
+XXXX type
+
+sms_file
+id
+message_id
+filename
+file_type

@@ -1,0 +1,15 @@
+{
+    "name": "Sms Backup Vault",
+    "description": "SMS Backup Vault",
+    "type": "project",
+    "license": "AGPL",
+    "authors": [
+        {
+            "name": "Justin Osborne"
+        }
+    ],
+    "require": {},
+    "require-dev": {
+        "phpunit/phpunit": "^5.4"
+    }
+}
