@@ -43,7 +43,7 @@ class Version000000Date20211001000000 extends SimpleMigrationStep {
     }
 
     private function createSmsFile($schema) {
-        $table = $schema->createTable('sms_file');
+        $table = $schema->createTable('sms_attachment');
 
         $table->addColumn('id', \OCP\DB\Types::INTEGER, [
             'autoincrement' => true,
@@ -56,18 +56,24 @@ class Version000000Date20211001000000 extends SimpleMigrationStep {
             'unsigned' => true,
         ]);
 
-        $table->addColumn('filename', \OCP\DB\Types::STRING, [
+        $table->addColumn('name', \OCP\DB\Types::STRING, [
+            'notnull' => false,
+            'length' => 200,
+        ]);
+
+        $table->addColumn('filetype', \OCP\DB\Types::STRING, [
             'notnull' => true,
             'length' => 200,
         ]);
 
-        $table->addColumn('file_type', \OCP\DB\Types::STRING, [
+        $table->addColumn('unique_hash', \OCP\DB\Types::STRING, [
             'notnull' => true,
-            'length' => 200,
+            'length' => 32,
         ]);
 
         $table->setPrimaryKey(['id']);
         $table->addIndex(['message_id'], 'sms_file_mid_index');
+        $table->addIndex(['unique_hash'], 'sms_file_hash_index');
     }
 
     private function createSmsMessage($schema) {
@@ -85,14 +91,13 @@ class Version000000Date20211001000000 extends SimpleMigrationStep {
         ]);
 
         $table->addColumn('address_id', \OCP\DB\Types::INTEGER, [
-            'notnull' => true,
+            'notnull' => false,
             'unsigned' => true,
         ]);
 
-        $table->addColumn('send_rec', \OCP\DB\Types::INTEGER, [
+        $table->addColumn('received', \OCP\DB\Types::INTEGER, [
             'notnull' => true,
             'unsigned' => true,
-            'length' => 1
         ]);
 
         $table->addColumn('timestamp', \OCP\DB\Types::INTEGER, [
@@ -109,10 +114,16 @@ class Version000000Date20211001000000 extends SimpleMigrationStep {
             'notnull' => false,
         ]);
 
+        $table->addColumn('unique_hash', \OCP\DB\Types::STRING, [
+            'notnull' => true,
+            'length' => 32
+        ]);
+
         $table->setPrimaryKey(['id', 'thread_id']);
         $table->addIndex(['id'], 'sms_message_mid_index');
         $table->addIndex(['thread_id'], 'sms_message_tid_index');
         $table->addIndex(['address_id'], 'sms_message_aid_index');
+        $table->addIndex(['unique_hash'], 'sms_message_hash_idx');
     }
 
     private function createSmsThread($schema) {
@@ -133,8 +144,14 @@ class Version000000Date20211001000000 extends SimpleMigrationStep {
             'length' => 200
         ]);
 
+        $table->addColumn('unique_hash', \OCP\DB\Types::STRING, [
+            'notnull' => true,
+            'length' => 32
+        ]);
+
         $table->setPrimaryKey(['id', 'user_id']);
         $table->addIndex(['id'], 'sms_thread_tid_index');
+        $table->addIndex(['unique_hash'], 'sms_thread_hash_idx');
     }
 
     private function createSmsThreadAddress($schema) {
@@ -174,7 +191,7 @@ class Version000000Date20211001000000 extends SimpleMigrationStep {
         ]);
 
         $table->addColumn('name', \OCP\DB\Types::STRING, [
-            'notnull' => true,
+            'notnull' => false,
             'length' => 200,
         ]);
 

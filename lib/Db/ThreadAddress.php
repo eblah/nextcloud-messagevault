@@ -7,18 +7,18 @@ use OCP\AppFramework\Db\Entity,
     \OCP\DB\Types as Types;
 
 class ThreadAddress extends Entity implements JsonSerializable {
-    protected $thread_id;
-    protected $address_id;
+    protected $threadId;
+    protected $addressId;
 
     public function __construct() {
-        $this->addType('thread_id',Types::INTEGER);
-        $this->addType('address_id',Types::INTEGER);
+        $this->addType('threadId',Types::INTEGER);
+        $this->addType('addressId',Types::INTEGER);
     }
 
     public function jsonSerialize() {
         return [
-            'id' => $this->thread_id,
-            'user_id' => $this->address_id,
+            'threadId' => $this->threadId,
+            'addressId' => $this->addressId,
         ];
     }
 }

@@ -8,11 +8,11 @@ use OCP\AppFramework\Db\Entity,
 
 class Address extends Entity implements JsonSerializable {
     protected $address;
-    protected $user_id;
+    protected $userId;
     protected $name;
 
     public function __construct() {
-        $this->addType('user_id',Types::STRING);
+        $this->addType('userId',Types::STRING);
         $this->addType('address',Types::STRING);
         $this->addType('name',Types::STRING);
     }
@@ -20,7 +20,7 @@ class Address extends Entity implements JsonSerializable {
     public function jsonSerialize() {
         return [
             'id' => $this->id,
-            'user_id' => $this->user_id,
+            'userId' => $this->userId,
             'address' => $this->address,
             'name' => $this->name,
         ];

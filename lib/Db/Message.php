@@ -7,31 +7,38 @@ use OCP\AppFramework\Db\Entity,
     \OCP\DB\Types as Types;
 
 class Message extends Entity implements JsonSerializable {
-    protected $thread_id;
-    protected $address_id;
+    protected $threadId;
+    protected $addressId;
     protected $timestamp;
-    protected $send_rec;
+    protected $received;
     protected $subject;
     protected $body;
+    protected $uniqueHash;
 
     public function __construct() {
-        $this->addType('thread_id',Types::INTEGER);
-        $this->addType('address_id',Types::INTEGER);
+        $this->addType('threadId',Types::INTEGER);
+        $this->addType('addressId',Types::INTEGER);
         $this->addType('timestamp',Types::INTEGER);
-        $this->addType('send_rec',Types::INTEGER);
+        $this->addType('received',Types::INTEGER);
         $this->addType('subject',Types::STRING);
-        $this->addType('body',Types::TEXT);
+        $this->addType('body',Types::STRING);
+        $this->addType('uniqueHash',Types::STRING);
+    }
+
+    public static function buildHash(int $address_id, int $date, string $subject = null, string $body = null): string {
+        return md5($address_id . '|' . $date . '|' . $body);
     }
 
     public function jsonSerialize() {
         return [
             'id' => $this->id,
-            'thread_id' => $this->thread_id,
-            'address_id' => $this->address_id,
+            'threadId' => $this->threadId,
+            'addressId' => $this->addressId,
             'timestamp' => $this->timestamp,
-            'send_rec' => $this->send_rec,
+            'received' => $this->received,
             'subject' => $this->subject,
-            'body' => $this->body
+            'body' => $this->body,
+            'uniqueHash' => $this->uniqueHash,
         ];
     }
 }

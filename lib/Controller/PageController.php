@@ -1,17 +1,21 @@
 <?php
 namespace OCA\SmsBackupVault\Controller;
 
+use OCA\SmsBackupVault\Service\ImportXmlService;
+use OCA\SmsBackupVault\Storage\AttachmentStorage;
 use OCP\IRequest;
 use OCP\AppFramework\Http\TemplateResponse;
-use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Controller;
 
 class PageController extends Controller {
 	private $userId;
 
-	public function __construct($AppName, IRequest $request, $UserId){
+    private $import_xml;
+
+	public function __construct($AppName, IRequest $request, ImportXmlService $import_xml, $UserId) {
 		parent::__construct($AppName, $request);
 		$this->userId = $UserId;
+        $this->import_xml = $import_xml;
 	}
 
 	/**
@@ -25,6 +29,11 @@ class PageController extends Controller {
 	 * @NoCSRFRequired
 	 */
 	public function index() {
+        $this->import_xml
+            ->runImport();
+
+        die;
+
 		return new TemplateResponse('smsbackupvault', 'index');  // templates/index.php
 	}
 
