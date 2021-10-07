@@ -41,13 +41,24 @@ class MessageMapper extends QBMapper {
     /**
      * @return Message[]
      */
-    public function findAll(): array {
+    public function findAll($thread_id, $page, $limit): array {
         $qb = $this->db->getQueryBuilder();
 
-        $select = $qb->select('*')
-            ->from($this->getTableName());
+        $select = $qb->select('a.address', 'a.name', 'm.timestamp', 'm.received', 'm.body')
+            ->from($this->getTableName(), 'm')
+            ->where(
+                $qb->expr()->eq('thread_id', $qb->createNamedParameter($thread_id))
+            )
+            ->join('m', 'sms_address', 'a', 'm.address_id = a.id')
+            ->orderBy('timestamp', 'desc')
+            ->setMaxResults($limit)
+            ->setFirstResult($page * $limit);
 
-        return $this->findEntities($select);
+        $result = $select->executeQuery();
+        $return = $result->fetchAll();
+        $result->closeCursor();
+
+        return $return;
     }
 
     public function doesHashExist($hash): ?int {

@@ -45,9 +45,10 @@ class ThreadMapper extends QBMapper {
     public function findAll(string $user_id): array {
         $qb = $this->db->getQueryBuilder();
 
-        $select = $qb->select('*')
+        $select = $qb->select('id', 'name')
             ->from($this->getTableName())
-            ->where($qb->expr()->eq('user_id', $qb->createNamedParameter($user_id)));
+            ->where($qb->expr()->eq('user_id', $qb->createNamedParameter($user_id)))
+            ->orderBy('name');
 
         return $this->findEntities($select);
     }
@@ -73,7 +74,7 @@ class ThreadMapper extends QBMapper {
             ->where(
                 $qb->expr()->eq('user_id', $qb->createNamedParameter($user_id))
             )->andWhere(
-                $qb->expr()->eq('id', $id)
+                $qb->expr()->eq('id', $qb->createNamedParameter($id))
             );
 
         return $this->findEntities($select);

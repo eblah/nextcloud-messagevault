@@ -8,6 +8,9 @@
  * it's instantiated in there
  */
 return [
+    'resources' => [
+        'thread' => ['url' => '/thread'],
+    ],
     'routes' => [
 	   ['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
 	   ['name' => 'page#do_echo', 'url' => '/echo', 'verb' => 'POST'],

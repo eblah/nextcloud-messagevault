@@ -38,7 +38,6 @@ class Message extends Entity implements JsonSerializable {
             'received' => $this->received,
             'subject' => $this->subject,
             'body' => $this->body,
-            'uniqueHash' => $this->uniqueHash,
         ];
     }
 }

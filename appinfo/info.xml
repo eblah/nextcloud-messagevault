@@ -15,7 +15,7 @@
     <category>tools</category>
     <bugs>https://github.com/eblah/nextcloud-sms-backup-vault/issues</bugs>
     <dependencies>
-        <nextcloud min-version="15" max-version="15"/>
+        <nextcloud min-version="19" max-version="22"/>
     </dependencies>
     <navigations>
         <navigation>

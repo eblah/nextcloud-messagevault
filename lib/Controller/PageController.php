@@ -6,6 +6,7 @@ use OCA\SmsBackupVault\Storage\AttachmentStorage;
 use OCP\IRequest;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Controller;
+use OCP\Util;
 
 class PageController extends Controller {
 	private $userId;
@@ -29,10 +30,10 @@ class PageController extends Controller {
 	 * @NoCSRFRequired
 	 */
 	public function index() {
-        $this->import_xml
-            ->runImport();
+//        $this->import_xml
+//            ->runImport();
 
-        die;
+        Util::addScript('smsbackupvault', 'smsbackupvault-main');
 
 		return new TemplateResponse('smsbackupvault', 'index');  // templates/index.php
 	}
