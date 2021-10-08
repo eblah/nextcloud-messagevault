@@ -11,7 +11,6 @@ class Message extends Entity implements JsonSerializable {
     protected $addressId;
     protected $timestamp;
     protected $received;
-    protected $subject;
     protected $body;
     protected $uniqueHash;
 
@@ -22,12 +21,11 @@ class Message extends Entity implements JsonSerializable {
         $this->addType('addressId',Types::INTEGER);
         $this->addType('timestamp',Types::INTEGER);
         $this->addType('received',Types::INTEGER);
-        $this->addType('subject',Types::STRING);
         $this->addType('body',Types::STRING);
         $this->addType('uniqueHash',Types::STRING);
     }
 
-    public static function buildHash(int $address_id, int $date, string $subject = null, string $body = null): string {
+    public static function buildHash(int $address_id, int $date, string $body = null): string {
         return md5($address_id . '|' . $date . '|' . $body);
     }
 

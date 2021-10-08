@@ -166,8 +166,8 @@ ini_set('memory_limit', '512M');
         return $this->findOrCreateNewThread($thread_name, $address_ids);
     }
 
-    private function createMessage(int $thread_id, int $address_id, int $date, int $rec, string $subject = null, string $body = null) {
-        $hash = Message::buildHash($address_id, $date, $subject, $body); // Attachments could be attached to multi-messages
+    private function createMessage(int $thread_id, int $address_id, int $date, int $rec, string $body = null) {
+        $hash = Message::buildHash($address_id, $date, $body); // Attachments could be attached to multi-messages
 
         $m_id = $this->message_mapper->doesHashExist($hash);
         if($m_id === null) {
@@ -176,7 +176,6 @@ ini_set('memory_limit', '512M');
                 'addressId' => $address_id,
                 'timestamp' => $date,
                 'received' => $rec,
-                'subject' => $subject,
                 'body' => $body,
                 'uniqueHash' => $hash
             ]));
@@ -196,13 +195,15 @@ ini_set('memory_limit', '512M');
             $subject = (string)$message_data['subject'];
             $body = (string)$message_data['body'];
 
+            if($body === 'null') $body = '';
+            if($subject !== 'null') $body = $subject . "\n" . $body;
+
             $this->createMessage(
                 $thread_id,
                 $this->getAddressId($message_data['address']),
                 $message_data['date'] / 1000,
                 (int)$message_data['type'] === 1 ? 1 : 0,
-                $subject === 'null' ? null : $subject,
-                $body === 'null' ? null : $body
+                $body === '' ? null : $body
             );
         } catch(Exception $e) {
             echo $e->getMessage();
@@ -236,7 +237,6 @@ ini_set('memory_limit', '512M');
                         $this->getAddressId($addresses[0]),
                         $message_data['date'] / 1000,
                         (int)$message_data['m_type'] === 132 ? 1 : 0,
-                        null,
                         $part['text'] === 'null' ? null : $part['text']
                     );
                     if($part['ct'] != 'text/plain') {
@@ -247,7 +247,6 @@ ini_set('memory_limit', '512M');
                             echo $e->getMessage();
                         }
                     }
-                    //	file_put_contents('./files/' . $part['cl'], base64_decode($part['data']));
                 }
             }
         } catch(Exception $e) {

@@ -105,11 +105,6 @@ class Version000000Date20211001000000 extends SimpleMigrationStep {
             'unsigned' => true,
         ]);
 
-        $table->addColumn('subject', \OCP\DB\Types::STRING, [
-            'notnull' => false,
-            'length' => 200,
-        ]);
-
         $table->addColumn('body', \OCP\DB\Types::TEXT, [
             'notnull' => false,
         ]);
