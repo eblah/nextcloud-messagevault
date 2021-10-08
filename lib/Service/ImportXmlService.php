@@ -14,6 +14,7 @@ use OCA\SmsBackupVault\Db\ThreadAddressMapper;
 use OCA\SmsBackupVault\Db\ThreadMapper;
 use OCA\SmsBackupVault\Storage\AttachmentStorage;
 use OCP\Files\IAppData;
+use OCP\IUserSession;
 use SimpleXMLElement;
 use XMLReader;
 
@@ -34,11 +35,11 @@ class ImportXmlService {
     private $thread_address_mapper;
     private $attachment_storage;
 
-    private $user_id;
+    private $user;
 
     public function __construct(AddressMapper $address_mapper, MessageMapper $message_mapper,
                                 ThreadMapper $thread_mapper, ThreadAddressMapper $thread_address_mapper,
-                                AttachmentMapper $attachment_mapper, AttachmentStorage $attachment_storage, $UserId) {
+                                AttachmentMapper $attachment_mapper, AttachmentStorage $attachment_storage, IUserSession $user) {
         $this->exclude_numbers = [$this->parseNumber(file_get_contents('/var/www/html/nextcloud/data/phone.txt'))];
 
         $this->address_mapper = $address_mapper;
@@ -47,17 +48,17 @@ class ImportXmlService {
         $this->thread_address_mapper = $thread_address_mapper;
         $this->attachment_storage = $attachment_storage;
         $this->attachment_mapper = $attachment_mapper;
-        $this->user_id = $UserId;
+        $this->user = $user->getUser();
     }
 
     private function cacheAddresses() {
-        foreach($this->address_mapper->findAll($this->user_id) as $address) {
+        foreach($this->address_mapper->findAll($this->user) as $address) {
             $this->cache_address[$address->getAddress()] = $address->getId();
         }
     }
 
     private function cacheThread() {
-        foreach($this->thread_mapper->findAllHashes($this->user_id) as $thread) {
+        foreach($this->thread_mapper->findAllHashes($this->user) as $thread) {
             $this->cache_thread[$thread->getUniqueHash()] = $thread->getId();
         }
     }
@@ -97,7 +98,7 @@ ini_set('memory_limit', '512M');
         if(!array_key_exists($address, $this->cache_address)) {
             $id = $this->address_mapper->insert((new Address())->fromParams([
                 'address' => $address,
-                'userId' => $this->user_id,
+                'userId' => $this->user,
                 'name' => $name
             ]))->getId();
 
@@ -108,11 +109,11 @@ ini_set('memory_limit', '512M');
     }
 
     private function findOrCreateNewThread(string $thread_name, array $address_ids): int {
-        $hash = Thread::buildHash($address_ids, $this->user_id);
+        $hash = Thread::buildHash($address_ids, $this->user);
 
         if(!array_key_exists($hash, $this->cache_thread)) {
             $id = $this->thread_mapper->insert((new Thread())->fromParams([
-                'userId' => $this->user_id,
+                'userId' => $this->user,
                 'name' => $thread_name,
                 'uniqueHash' => $hash
             ]))->getId();
@@ -257,7 +258,7 @@ ini_set('memory_limit', '512M');
     }
 
     private function createAttachment(int $message_id, int $thread_id, string $type, string $data, string $name = null) {
-        $hash = Attachment::buildHash($message_id, $name, $this->user_id);
+        $hash = Attachment::buildHash($message_id, $name, $this->user);
 
         $attachment_id = $this->attachment_mapper->doesHashExist($hash);
 
@@ -270,6 +271,7 @@ ini_set('memory_limit', '512M');
             ]));
             $attachment_id = $entity->getId();
 
+            /** @todo This needs to be moved to the attachment service */
             $this->attachment_storage->writeFile($thread_id, $attachment_id, base64_decode($data));
         }
     }

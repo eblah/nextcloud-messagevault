@@ -20,7 +20,6 @@ class Address extends Entity implements JsonSerializable {
     public function jsonSerialize() {
         return [
             'id' => $this->id,
-            'userId' => $this->userId,
             'address' => $this->address,
             'name' => $this->name,
         ];

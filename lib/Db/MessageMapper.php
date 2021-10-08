@@ -44,21 +44,31 @@ class MessageMapper extends QBMapper {
     public function findAll($thread_id, $page, $limit): array {
         $qb = $this->db->getQueryBuilder();
 
-        $select = $qb->select('a.address', 'a.name', 'm.timestamp', 'm.received', 'm.body')
+        $select = $qb->select('id', 'm.address_id', 'm.timestamp', 'm.received', 'm.body')
             ->from($this->getTableName(), 'm')
             ->where(
                 $qb->expr()->eq('thread_id', $qb->createNamedParameter($thread_id))
             )
-            ->join('m', 'sms_address', 'a', 'm.address_id = a.id')
             ->orderBy('timestamp', 'desc')
             ->setMaxResults($limit)
             ->setFirstResult($page * $limit);
 
+        return $this->findEntities($select);
+    }
+
+    public function getMessageCount(int $thread_id): int {
+        $qb = $this->db->getQueryBuilder();
+
+        $select = $qb->select($qb->createFunction('COUNT(*)'))
+            ->from($this->getTableName(), 'm')
+            ->where(
+                $qb->expr()->eq('thread_id', $qb->createNamedParameter($thread_id))
+            );
         $result = $select->executeQuery();
-        $return = $result->fetchAll();
+        $cnt = $result->fetchColumn();
         $result->closeCursor();
 
-        return $return;
+        return (int)$cnt;
     }
 
     public function doesHashExist($hash): ?int {

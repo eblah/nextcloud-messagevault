@@ -26,6 +26,7 @@ declare(strict_types=1);
  */
 namespace OCA\SmsBackupVault\Db;
 
+use OC\User\User;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\Entity;
 use OCP\AppFramework\Db\QBMapper;
@@ -42,23 +43,23 @@ class ThreadMapper extends QBMapper {
     /**
      * @return Thread[]
      */
-    public function findAll(string $user_id): array {
+    public function findAll(User $user): array {
         $qb = $this->db->getQueryBuilder();
 
         $select = $qb->select('id', 'name')
             ->from($this->getTableName())
-            ->where($qb->expr()->eq('user_id', $qb->createNamedParameter($user_id)))
+            ->where($qb->expr()->eq('user_id', $qb->createNamedParameter($user->getUID())))
             ->orderBy('name');
 
         return $this->findEntities($select);
     }
 
-    public function findAllHashes(string $user_id): array {
+    public function findAllHashes(User $user): array {
         $qb = $this->db->getQueryBuilder();
 
         $select = $qb->select('id', 'unique_hash')
             ->from($this->getTableName())
-            ->where($qb->expr()->eq('user_id', $qb->createNamedParameter($user_id)));
+            ->where($qb->expr()->eq('user_id', $qb->createNamedParameter($user->getUID())));
 
         return $this->findEntities($select);
     }
@@ -66,13 +67,13 @@ class ThreadMapper extends QBMapper {
     /**
      * @return Thread
      */
-    public function find($id, string $user_id): array {
+    public function find($id, User $user): array {
         $qb = $this->db->getQueryBuilder();
 
         $select = $qb->select('*')
             ->from($this->getTableName())
             ->where(
-                $qb->expr()->eq('user_id', $qb->createNamedParameter($user_id))
+                $qb->expr()->eq('user_id', $qb->createNamedParameter($user->getUID()))
             )->andWhere(
                 $qb->expr()->eq('id', $qb->createNamedParameter($id))
             );

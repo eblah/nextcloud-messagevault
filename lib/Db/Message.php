@@ -15,6 +15,8 @@ class Message extends Entity implements JsonSerializable {
     protected $body;
     protected $uniqueHash;
 
+    private $attachments;
+
     public function __construct() {
         $this->addType('threadId',Types::INTEGER);
         $this->addType('addressId',Types::INTEGER);
@@ -29,15 +31,21 @@ class Message extends Entity implements JsonSerializable {
         return md5($address_id . '|' . $date . '|' . $body);
     }
 
+    public function setAttachments($attachments): Message {
+        $this->attachments = $attachments;
+        return $this;
+    }
+
     public function jsonSerialize() {
-        return [
+        $return = [
             'id' => $this->id,
-            'threadId' => $this->threadId,
             'addressId' => $this->addressId,
             'timestamp' => $this->timestamp,
             'received' => $this->received,
-            'subject' => $this->subject,
             'body' => $this->body,
+            'attachments' => $this->attachments,
         ];
+
+        return $return;
     }
 }

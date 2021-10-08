@@ -4,6 +4,7 @@ namespace OCA\SmsBackupVault\Service;
 
 use Exception;
 
+use OCA\SmsBackupVault\Db\AddressMapper;
 use OCA\SmsBackupVault\Db\MessageMapper;
 use OCA\SmsBackupVault\Db\ThreadAddressMapper;
 use OCA\SmsBackupVault\Db\ThreadMapper;
@@ -15,16 +16,14 @@ use OCA\NotesTutorial\Db\NoteMapper;
 use OCP\IUserSession;
 
 
-class MessageService {
-    private $message_mapper;
+class AddressService {
+    private $address_mapper;
 
-    public function __construct(MessageMapper $message_mapper) {
-        $this->message_mapper = $message_mapper;
+    public function __construct(AddressMapper $address_mapper) {
+        $this->address_mapper = $address_mapper;
     }
 
-    public function findAll(int $thread_id, int $page = 0, int $limit = 100) {
-        $messages = $this->message_mapper->findAll($thread_id, $page, $limit);
-
-        return $messages;
+    public function findAll(IUserSession $user) {
+        return $this->address_mapper->findAll($user->getUser(), ['id', 'address', 'name']);
     }
 }

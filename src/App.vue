@@ -19,18 +19,29 @@
 		</AppNavigation>
 		<AppContent>
 			<div class="section" v-if="currentThread">
-          <h1>{{ currentThread.details.name }}</h1>
-          <div id="smsbackupvaultMessageList" ref="messageList">
-            <div v-for="message in currentThread.messages" style="padding: 10px; background: #ddd; margin-bottom: 5px">
-              <div v-if="message.received == 1">
-                Received:
-              </div>
-              <div v-else>
-                Sent:
-              </div>
-              {{ message.body }}
-            </div>
-          </div>
+				<h1>{{ currentThread.details.name }}</h1>
+
+				<div v-if="threadStatus.loading">
+					Loading...
+				</div>
+				<div id="smsbackupvaultMessageList" ref="messageList" v-else-if="currentThread.messages.length && !threadStatus.loading">
+					<div v-if="threadStatus.loading">Loading...</div>
+					<div v-else-if="!threadStatus.loading" v-for="message in currentThread.messages" style="padding: 10px; background: #ddd; margin-bottom: 5px">
+						<div v-if="message.received == 1">
+							Received:
+						</div>
+						<div v-else>
+							Sent:
+						</div>
+						<div v-for="file in message.attachments">
+							<img :src="file.url" style="max-width: 200px">
+						</div>
+						{{ message.body }}
+					</div>
+				</div>
+				<div v-else>
+					Could not find any messages.
+				</div>
 			</div>
 			<div v-else id="emptycontent">
 				<div class="icon-file" />
@@ -64,6 +75,9 @@ export default {
 	},
 	data() {
 		return {
+			threadStatus: {
+				loading: false
+			},
 			threadList: [],
 			currentThreadId: null,
 			currentThread: null,
@@ -87,29 +101,92 @@ export default {
 		this.loading = false;
 	},
 
+	updated() {
+		this.$nextTick(() => {
+			if(!this.threadStatus.loading && this.threadStatus.firstLoad) {
+				if(this.threadStatus.topPosition === 0) {
+					this.$refs.messageList.scrollTo(0, this.$refs.messageList.scrollHeight);
+				}
+				this.threadStatus.firstLoad = false;
+
+				this.watchScroll();
+			}
+
+			if(this._currentScrollPosition) {
+				this.$refs.messageList.scrollTop = this.$refs.messageList.scrollHeight - this._currentScrollPosition + this.$refs.messageList.scrollTop;
+			}
+			this._currentScrollPosition = null;
+		});
+	},
+
 	methods: {
 		watchScroll() {
 			if(!this.$refs.messageList) return;
 
-			return;
-			this.$refs.messageList.scrollTo(0, this.$refs.messageList.scrollHeight);
-
 			this.$refs.messageList.onscroll = (() => {
-				let top = this.$refs.messageList.scrollTop;// this.$refs.messageList.offsetHeight;
-				if(this.$refs.messageList.scrollTop < 50 && this.$refs.messageList.scrollTop > 0) alert('load moar');
-				//this.$refs.messageList.scrollTo(0, this.$refs.messageList.scrollHeight);
+				//let top = this.$refs.messageList.scrollTop;// this.$refs.messageList.offsetHeight;
+				if(this.$refs.messageList.scrollTop < 150 && this.$refs.messageList.scrollTop > 0) this.loadMessages('top');
+				// @todo also find the bottom
+				//if(this.$refs.messageList.scrollTop < 50 && this.$refs.messageList.scrollTop > 0) console.log('load moar');
 			});
 		},
 
-		async openThread(thread) {
+		getLoadPosition(position) {
+			if(position === 'top') {
+				this.threadStatus.topPosition += 1;
+				return this.threadStatus.topPosition;
+			}
+			else {
+				this.threadStatus.bottomPosition -= 1;
+				return this.threadStatus.bottomPosition;
+			}
+		},
+
+		async loadMessages(direction = 'first') {
+			if(this.loading) return false;
 			this.loading = true;
 
-			const response = await axios.get(generateUrl(`/apps/smsbackupvault/thread/${thread.id}`));
-			this.currentThread = response.data;
+			const load_pos = this.getLoadPosition(direction);
+			if(this.currentThread.details.total <= load_pos * this.threadStatus.count) {
+				this.loading = false;
+				return false;
+			}
+			const response = await axios.get(generateUrl(`/apps/smsbackupvault/thread/${this.threadStatus.id}/messages?position=${load_pos}&limit=${this.threadStatus.count}`));
+			response.data.reverse();
+			if(direction === 'top') {
+				// Save current scroll position
+				this._currentScrollPosition = this.$refs.messageList.scrollHeight; // this.$refs.messageList.scrollTop;
+				response.data.forEach((msg) => {
+					this.currentThread.messages.unshift(msg);
+				});
+			} else this.currentThread.messages = response.data;
+
+			this.threadStatus.loading = false;
 
 			this.loading = false;
+		},
 
-			setTimeout(() => this.watchScroll(), 5000);
+		async openThread(thread) {
+			if(this.loading) return false;
+			this.loading = true;
+
+			this.threadStatus = {
+				topPosition: 0,
+				bottomPosition: 1,
+				count: 100,
+				firstLoad: true,
+				loading: true,
+				id: thread.id,
+			};
+
+			const response = await axios.get(generateUrl(`/apps/smsbackupvault/thread/${thread.id}`));
+			this.currentThread = {
+				details: response.data,
+				messages: [],
+			};
+			this.loading = false;
+
+			this.loadMessages();
 		},
 
 		async deleteThread(thread) {

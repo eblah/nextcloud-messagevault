@@ -10,6 +10,8 @@
 return [
     'resources' => [
         'thread' => ['url' => '/thread'],
+        'message' => ['url' => '/thread/{thread_id}/messages'],
+        'address' => ['url' => '/address'],
     ],
     'routes' => [
 	   ['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],

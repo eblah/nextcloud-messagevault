@@ -26,6 +26,7 @@ declare(strict_types=1);
  */
 namespace OCA\SmsBackupVault\Db;
 
+use OC\User\User;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\QBMapper;
 use OCP\IDBConnection;
@@ -41,12 +42,12 @@ class AddressMapper extends QBMapper {
     /**
      * @return Address[]
      */
-    public function findAll(string $user_id): array {
+    public function findAll(User $user, array $fields = ['*']): array {
         $qb = $this->db->getQueryBuilder();
 
-        $select = $qb->select('*')
+        $select = $qb->select($fields)
             ->from($this->getTableName())
-            ->where($qb->expr()->eq('user_id', $qb->createNamedParameter($user_id)));
+            ->where($qb->expr()->eq('user_id', $qb->createNamedParameter($user->getUID())));
 
         return $this->findEntities($select);
     }
@@ -54,13 +55,13 @@ class AddressMapper extends QBMapper {
     /**
      * @return Address
      */
-    public function find($id, string $user_id): array {
+    public function find($id, User $user): array {
         $qb = $this->db->getQueryBuilder();
 
         $select = $qb->select('*')
             ->from($this->getTableName())
             ->where(
-                $qb->expr()->eq('user_id', $qb->createNamedParameter($user_id))
+                $qb->expr()->eq('user_id', $qb->createNamedParameter($user->getUID()))
             )->andWhere(
                 $qb->expr()->eq('id', $id)
             );

@@ -68,4 +68,16 @@ class AttachmentMapper extends QBMapper {
 
         return $this->findEntities($select);
     }
+
+    public function findAllByMessageId(array $message_ids): array {
+        $qb = $this->db->getQueryBuilder();
+
+        $select = $qb->select('*')
+            ->from($this->getTableName())
+            ->where(
+                $qb->expr()->in('message_id', $qb->createNamedParameter($message_ids, $qb::PARAM_INT_ARRAY))
+            );
+
+        return $this->findEntities($select);
+    }
 }

@@ -13,6 +13,8 @@ use OCA\SmsBackupVault\Db\ThreadMapper;
 use OCA\SmsBackupVault\Storage\AttachmentStorage;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
+use OCP\IUser;
+use OCP\IUserSession;
 
 class ThreadService {
     private $thread_mapper;
@@ -20,26 +22,37 @@ class ThreadService {
     private $message_mapper;
 
     public function __construct(ThreadMapper $thread_mapper, ThreadAddressMapper $thread_address_mapper,
-                                MessageMapper $message_mapper,
-                                $UserId) {
+                                MessageMapper $message_mapper) {
         $this->thread_address_mapper = $thread_address_mapper;
         $this->thread_mapper = $thread_mapper;
         $this->message_mapper = $message_mapper;
     }
 
-    public function findAll(string $user_id): array {
-        return $this->thread_mapper->findAll($user_id);
+    public function findAll(IUserSession $user): array {
+        return $this->thread_mapper->findAll($user->getUser());
     }
 
-    public function loadThread(string $user_id, int $id, int $page = 0, int $limit = 100) {
-        $info = $this->thread_mapper->find($id, $user_id);
-        if(empty($info)) return false;
+    /**
+     * Verifies the user has permission to read this thread
+     * @param string $user_id
+     * @return bool
+     */
+    public function hasPermission(IUserSession $user, int $id): bool {
+        $info = $this->thread_mapper->find($id, $user->getUser());
+        return !empty($info);
+    }
 
-        $messages = $this->message_mapper->findAll($id, $page, $limit);
+    public function getMessageCount($thead_id): int {
+    }
+
+    public function getThreadDetails(IUserSession $user, int $id): array {
+        $details = $this->thread_mapper->find($id, $user->getUser());
+        if(empty($details)) return [];
 
         return [
-            'details' => $info[0],
-            'messages' => $messages
+            'id' => $details[0]->getId(),
+            'name' => $details[0]->getName(),
+            'total' => $this->message_mapper->getMessageCount($id)
         ];
     }
 }

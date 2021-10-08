@@ -12,8 +12,10 @@ class Attachment extends Entity implements JsonSerializable {
     protected $filetype;
     protected $uniqueHash;
 
+    protected $url;
+
     public function __construct() {
-        $this->addType('message_id',Types::INTEGER);
+        $this->addType('messageId',Types::INTEGER);
         $this->addType('name',Types::STRING);
         $this->addType('filetype',Types::STRING);
         $this->addType('uniqueHash',Types::STRING);
@@ -28,7 +30,8 @@ class Attachment extends Entity implements JsonSerializable {
             'id' => $this->id,
             'messageId' => $this->messageId,
             'name' => $this->name,
-            'filetype' => $this->filetype
+            'filetype' => $this->filetype,
+            'url' => $this->url
         ];
     }
 }
