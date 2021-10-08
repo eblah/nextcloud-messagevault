@@ -34,54 +34,54 @@ use OCP\IDBConnection;
 use OCP\IUser;
 
 class ThreadMapper extends QBMapper {
-    public const TABLE_NAME = 'sms_thread';
+	public const TABLE_NAME = 'sms_thread';
 
-    public function __construct(IDBConnection $db) {
-        parent::__construct($db, self::TABLE_NAME, Thread::class);
-    }
+	public function __construct(IDBConnection $db) {
+		parent::__construct($db, self::TABLE_NAME, Thread::class);
+	}
 
-    /**
-     * @return Thread[]
-     */
-    public function findAll(User $user): array {
-        $qb = $this->db->getQueryBuilder();
+	/**
+	 * @return Thread[]
+	 */
+	public function findAll(User $user): array {
+		$qb = $this->db->getQueryBuilder();
 
-        $select = $qb->select('id', 'name')
-            ->from($this->getTableName())
-            ->where($qb->expr()->eq('user_id', $qb->createNamedParameter($user->getUID())))
-            ->orderBy('name');
+		$select = $qb->select('id', 'name')
+			->from($this->getTableName())
+			->where($qb->expr()->eq('user_id', $qb->createNamedParameter($user->getUID())))
+			->orderBy('name');
 
-        return $this->findEntities($select);
-    }
+		return $this->findEntities($select);
+	}
 
-    public function findAllHashes(User $user): array {
-        $qb = $this->db->getQueryBuilder();
+	public function findAllHashes(User $user): array {
+		$qb = $this->db->getQueryBuilder();
 
-        $select = $qb->select('id', 'unique_hash')
-            ->from($this->getTableName())
-            ->where($qb->expr()->eq('user_id', $qb->createNamedParameter($user->getUID())));
+		$select = $qb->select('id', 'unique_hash')
+			->from($this->getTableName())
+			->where($qb->expr()->eq('user_id', $qb->createNamedParameter($user->getUID())));
 
-        return $this->findEntities($select);
-    }
+		return $this->findEntities($select);
+	}
 
-    /**
-     * @return Thread
-     */
-    public function find($id, User $user): array {
-        $qb = $this->db->getQueryBuilder();
+	/**
+	 * @return Thread
+	 */
+	public function find($id, User $user): array {
+		$qb = $this->db->getQueryBuilder();
 
-        $select = $qb->select('*')
-            ->from($this->getTableName())
-            ->where(
-                $qb->expr()->eq('user_id', $qb->createNamedParameter($user->getUID()))
-            )->andWhere(
-                $qb->expr()->eq('id', $qb->createNamedParameter($id))
-            );
+		$select = $qb->select('*')
+			->from($this->getTableName())
+			->where(
+				$qb->expr()->eq('user_id', $qb->createNamedParameter($user->getUID()))
+			)->andWhere(
+				$qb->expr()->eq('id', $qb->createNamedParameter($id))
+			);
 
-        return $this->findEntities($select);
-    }
+		return $this->findEntities($select);
+	}
 
-    public function insert(Entity $entity): Entity {
-        return parent::insert($entity);
-    }
+	public function insert(Entity $entity): Entity {
+		return parent::insert($entity);
+	}
 }

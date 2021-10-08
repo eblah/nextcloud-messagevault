@@ -43,13 +43,13 @@ class MessageController extends Controller {
 		if(count($messages)) {
 			$attachments = $this->attachment_service->getAttachments($thread_id, array_column($messages, 'id'));
 
-            foreach($messages as $message) {
-                $files = array_filter($attachments, function(Attachment $attachment) use ($message) {
-                    return ($message->getId() === $attachment->getMessageId());
-                });
+			foreach($messages as $message) {
+				$files = array_filter($attachments, function(Attachment $attachment) use ($message) {
+					return ($message->getId() === $attachment->getMessageId());
+				});
 
-                if(count($files)) $message->setAttachments($files);
-            }
+				if(count($files)) $message->setAttachments($files);
+			}
 		}
 
 		return new DataResponse($messages);

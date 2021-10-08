@@ -8,13 +8,13 @@
  * it's instantiated in there
  */
 return [
-    'resources' => [
-        'thread' => ['url' => '/thread'],
-        'message' => ['url' => '/thread/{thread_id}/messages'],
-        'address' => ['url' => '/address'],
-    ],
-    'routes' => [
+	'resources' => [
+		'thread' => ['url' => '/thread'],
+		'message' => ['url' => '/thread/{thread_id}/messages'],
+		'address' => ['url' => '/address'],
+	],
+	'routes' => [
 	   ['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
 	   ['name' => 'page#do_echo', 'url' => '/echo', 'verb' => 'POST'],
-    ]
+	]
 ];

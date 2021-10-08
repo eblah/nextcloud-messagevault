@@ -196,8 +196,8 @@ export default {
 };
 </script>
 <style scoped>
-  #smsbackupvaultMessageList {
-    overflow: scroll;
-    height: 75vh;
-  }
+	#smsbackupvaultMessageList {
+		overflow: scroll;
+		height: 75vh;
+	}
 </style>

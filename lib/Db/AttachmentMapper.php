@@ -32,52 +32,52 @@ use OCP\IDBConnection;
 use OCP\IUser;
 
 class AttachmentMapper extends QBMapper {
-    public const TABLE_NAME = 'sms_attachment';
+	public const TABLE_NAME = 'sms_attachment';
 
-    public function __construct(IDBConnection $db) {
-        parent::__construct($db, self::TABLE_NAME, Attachment::class);
-    }
+	public function __construct(IDBConnection $db) {
+		parent::__construct($db, self::TABLE_NAME, Attachment::class);
+	}
 
-    public function doesHashExist($hash): ?int {
-        $qb = $this->db->getQueryBuilder();
+	public function doesHashExist($hash): ?int {
+		$qb = $this->db->getQueryBuilder();
 
-        $select = $qb->select('id')
-            ->from($this->getTableName())
-            ->where(
-                $qb->expr()->eq('unique_hash', $qb->createNamedParameter($hash))
-            );
+		$select = $qb->select('id')
+			->from($this->getTableName())
+			->where(
+				$qb->expr()->eq('unique_hash', $qb->createNamedParameter($hash))
+			);
 
-        $result = $select->execute();
-        $cnt = $result->fetchColumn();
-        $result->closeCursor();
+		$result = $select->execute();
+		$cnt = $result->fetchColumn();
+		$result->closeCursor();
 
-        return $cnt !== false ? (int)$cnt : null;
-    }
+		return $cnt !== false ? (int)$cnt : null;
+	}
 
-    /**
-     * @return Attachment
-     */
-    public function find(int $id): array {
-        $qb = $this->db->getQueryBuilder();
+	/**
+	 * @return Attachment
+	 */
+	public function find(int $id): array {
+		$qb = $this->db->getQueryBuilder();
 
-        $select = $qb->select('*')
-            ->from($this->getTableName())
-            ->where(
-                $qb->expr()->eq('id', $id)
-            );
+		$select = $qb->select('*')
+			->from($this->getTableName())
+			->where(
+				$qb->expr()->eq('id', $id)
+			);
 
-        return $this->findEntities($select);
-    }
+		return $this->findEntities($select);
+	}
 
-    public function findAllByMessageId(array $message_ids): array {
-        $qb = $this->db->getQueryBuilder();
+	public function findAllByMessageId(array $message_ids): array {
+		$qb = $this->db->getQueryBuilder();
 
-        $select = $qb->select('*')
-            ->from($this->getTableName())
-            ->where(
-                $qb->expr()->in('message_id', $qb->createNamedParameter($message_ids, $qb::PARAM_INT_ARRAY))
-            );
+		$select = $qb->select('*')
+			->from($this->getTableName())
+			->where(
+				$qb->expr()->in('message_id', $qb->createNamedParameter($message_ids, $qb::PARAM_INT_ARRAY))
+			);
 
-        return $this->findEntities($select);
-    }
+		return $this->findEntities($select);
+	}
 }

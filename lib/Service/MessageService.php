@@ -16,15 +16,15 @@ use OCP\IUserSession;
 
 
 class MessageService {
-    private $message_mapper;
+	private $message_mapper;
 
-    public function __construct(MessageMapper $message_mapper) {
-        $this->message_mapper = $message_mapper;
-    }
+	public function __construct(MessageMapper $message_mapper) {
+		$this->message_mapper = $message_mapper;
+	}
 
-    public function findAll(int $thread_id, int $page = 0, int $limit = 100) {
-        $messages = $this->message_mapper->findAll($thread_id, $page, $limit);
+	public function findAll(int $thread_id, int $page = 0, int $limit = 100) {
+		$messages = $this->message_mapper->findAll($thread_id, $page, $limit);
 
-        return $messages;
-    }
+		return $messages;
+	}
 }

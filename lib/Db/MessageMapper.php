@@ -32,73 +32,73 @@ use OCP\IDBConnection;
 use OCP\IUser;
 
 class MessageMapper extends QBMapper {
-    public const TABLE_NAME = 'sms_message';
+	public const TABLE_NAME = 'sms_message';
 
-    public function __construct(IDBConnection $db) {
-        parent::__construct($db, self::TABLE_NAME, Message::class);
-    }
+	public function __construct(IDBConnection $db) {
+		parent::__construct($db, self::TABLE_NAME, Message::class);
+	}
 
-    /**
-     * @return Message[]
-     */
-    public function findAll($thread_id, $page, $limit): array {
-        $qb = $this->db->getQueryBuilder();
+	/**
+	 * @return Message[]
+	 */
+	public function findAll($thread_id, $page, $limit): array {
+		$qb = $this->db->getQueryBuilder();
 
-        $select = $qb->select('id', 'm.address_id', 'm.timestamp', 'm.received', 'm.body')
-            ->from($this->getTableName(), 'm')
-            ->where(
-                $qb->expr()->eq('thread_id', $qb->createNamedParameter($thread_id))
-            )
-            ->orderBy('timestamp', 'desc')
-            ->setMaxResults($limit)
-            ->setFirstResult($page * $limit);
+		$select = $qb->select('id', 'm.address_id', 'm.timestamp', 'm.received', 'm.body')
+			->from($this->getTableName(), 'm')
+			->where(
+				$qb->expr()->eq('thread_id', $qb->createNamedParameter($thread_id))
+			)
+			->orderBy('timestamp', 'desc')
+			->setMaxResults($limit)
+			->setFirstResult($page * $limit);
 
-        return $this->findEntities($select);
-    }
+		return $this->findEntities($select);
+	}
 
-    public function getMessageCount(int $thread_id): int {
-        $qb = $this->db->getQueryBuilder();
+	public function getMessageCount(int $thread_id): int {
+		$qb = $this->db->getQueryBuilder();
 
-        $select = $qb->select($qb->createFunction('COUNT(*)'))
-            ->from($this->getTableName(), 'm')
-            ->where(
-                $qb->expr()->eq('thread_id', $qb->createNamedParameter($thread_id))
-            );
-        $result = $select->executeQuery();
-        $cnt = $result->fetchColumn();
-        $result->closeCursor();
+		$select = $qb->select($qb->createFunction('COUNT(*)'))
+			->from($this->getTableName(), 'm')
+			->where(
+				$qb->expr()->eq('thread_id', $qb->createNamedParameter($thread_id))
+			);
+		$result = $select->executeQuery();
+		$cnt = $result->fetchColumn();
+		$result->closeCursor();
 
-        return (int)$cnt;
-    }
+		return (int)$cnt;
+	}
 
-    public function doesHashExist($hash): ?int {
-        $qb = $this->db->getQueryBuilder();
+	public function doesHashExist($hash): ?int {
+		$qb = $this->db->getQueryBuilder();
 
-        $select = $qb->select('id')
-            ->from($this->getTableName())
-            ->where(
-                $qb->expr()->eq('unique_hash', $qb->createNamedParameter($hash))
-            );
+		$select = $qb->select('id')
+			->from($this->getTableName())
+			->where(
+				$qb->expr()->eq('unique_hash', $qb->createNamedParameter($hash))
+			);
 
-        $result = $select->execute();
-        $cnt = $result->fetchColumn();
-        $result->closeCursor();
+		$result = $select->execute();
+		$cnt = $result->fetchColumn();
+		$result->closeCursor();
 
-        return $cnt !== false ? (int)$cnt : null;
-    }
+		return $cnt !== false ? (int)$cnt : null;
+	}
 
-    /**
-     * @return Message
-     */
-    public function find($id): array {
-        $qb = $this->db->getQueryBuilder();
+	/**
+	 * @return Message
+	 */
+	public function find($id): array {
+		$qb = $this->db->getQueryBuilder();
 
-        $select = $qb->select('*')
-            ->from($this->getTableName())
-            ->where(
-                $qb->expr()->eq('id', $id)
-            );
+		$select = $qb->select('*')
+			->from($this->getTableName())
+			->where(
+				$qb->expr()->eq('id', $id)
+			);
 
-        return $this->findEntities($select);
-    }
+		return $this->findEntities($select);
+	}
 }

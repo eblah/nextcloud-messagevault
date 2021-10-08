@@ -32,38 +32,38 @@ use OCP\IDBConnection;
 use OCP\IUser;
 
 class ThreadAddressMapper extends QBMapper {
-    public const TABLE_NAME = 'sms_thread_address';
+	public const TABLE_NAME = 'sms_thread_address';
 
-    public function __construct(IDBConnection $db) {
-        parent::__construct($db, self::TABLE_NAME, ThreadAddress::class);
-    }
+	public function __construct(IDBConnection $db) {
+		parent::__construct($db, self::TABLE_NAME, ThreadAddress::class);
+	}
 
-    /**
-     * @return Message[]
-     */
-    public function findAll(): array {
-        $qb = $this->db->getQueryBuilder();
+	/**
+	 * @return Message[]
+	 */
+	public function findAll(): array {
+		$qb = $this->db->getQueryBuilder();
 
-        $select = $qb->select('*')
-            ->from($this->getTableName());
+		$select = $qb->select('*')
+			->from($this->getTableName());
 
-        return $this->findEntities($select);
-    }
+		return $this->findEntities($select);
+	}
 
-    /**
-     * @return Message
-     */
-    public function find($thread_id, $addres_id): array {
-        $qb = $this->db->getQueryBuilder();
+	/**
+	 * @return Message
+	 */
+	public function find($thread_id, $addres_id): array {
+		$qb = $this->db->getQueryBuilder();
 
-        $select = $qb->select('*')
-            ->from($this->getTableName())
-            ->where(
-                $qb->expr()->eq('thread_id', $thread_id)
-            )->andWhere(
-                $qb->expr()->eq('address_id', $addres_id)
-            );
+		$select = $qb->select('*')
+			->from($this->getTableName())
+			->where(
+				$qb->expr()->eq('thread_id', $thread_id)
+			)->andWhere(
+				$qb->expr()->eq('address_id', $addres_id)
+			);
 
-        return $this->findEntities($select);
-    }
+		return $this->findEntities($select);
+	}
 }

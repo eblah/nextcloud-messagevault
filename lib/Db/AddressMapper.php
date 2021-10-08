@@ -33,39 +33,39 @@ use OCP\IDBConnection;
 use OCP\IUser;
 
 class AddressMapper extends QBMapper {
-    public const TABLE_NAME = 'sms_address';
+	public const TABLE_NAME = 'sms_address';
 
-    public function __construct(IDBConnection $db) {
-        parent::__construct($db, self::TABLE_NAME, Address::class);
-    }
+	public function __construct(IDBConnection $db) {
+		parent::__construct($db, self::TABLE_NAME, Address::class);
+	}
 
-    /**
-     * @return Address[]
-     */
-    public function findAll(User $user, array $fields = ['*']): array {
-        $qb = $this->db->getQueryBuilder();
+	/**
+	 * @return Address[]
+	 */
+	public function findAll(User $user, array $fields = ['*']): array {
+		$qb = $this->db->getQueryBuilder();
 
-        $select = $qb->select($fields)
-            ->from($this->getTableName())
-            ->where($qb->expr()->eq('user_id', $qb->createNamedParameter($user->getUID())));
+		$select = $qb->select($fields)
+			->from($this->getTableName())
+			->where($qb->expr()->eq('user_id', $qb->createNamedParameter($user->getUID())));
 
-        return $this->findEntities($select);
-    }
+		return $this->findEntities($select);
+	}
 
-    /**
-     * @return Address
-     */
-    public function find($id, User $user): array {
-        $qb = $this->db->getQueryBuilder();
+	/**
+	 * @return Address
+	 */
+	public function find($id, User $user): array {
+		$qb = $this->db->getQueryBuilder();
 
-        $select = $qb->select('*')
-            ->from($this->getTableName())
-            ->where(
-                $qb->expr()->eq('user_id', $qb->createNamedParameter($user->getUID()))
-            )->andWhere(
-                $qb->expr()->eq('id', $id)
-            );
+		$select = $qb->select('*')
+			->from($this->getTableName())
+			->where(
+				$qb->expr()->eq('user_id', $qb->createNamedParameter($user->getUID()))
+			)->andWhere(
+				$qb->expr()->eq('id', $id)
+			);
 
-        return $this->findEntities($select);
-    }
+		return $this->findEntities($select);
+	}
 }

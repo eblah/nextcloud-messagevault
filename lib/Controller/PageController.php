@@ -11,12 +11,12 @@ use OCP\Util;
 class PageController extends Controller {
 	private $userId;
 
-    private $import_xml;
+	private $import_xml;
 
 	public function __construct($AppName, IRequest $request, ImportXmlService $import_xml, $UserId) {
 		parent::__construct($AppName, $request);
 		$this->userId = $UserId;
-        $this->import_xml = $import_xml;
+		$this->import_xml = $import_xml;
 	}
 
 	/**
@@ -33,7 +33,7 @@ class PageController extends Controller {
 //        $this->import_xml
 //            ->runImport();
 
-        Util::addScript('smsbackupvault', 'smsbackupvault-main');
+		Util::addScript('smsbackupvault', 'smsbackupvault-main');
 
 		return new TemplateResponse('smsbackupvault', 'index');  // templates/index.php
 	}
