@@ -1,8 +1,7 @@
 <template>
-	<div class="section">
-		<div v-if="currentThread.details">
+	<div>
+		<div v-if="currentThread.details" class="section">
 			<h1>{{ currentThread.details.name }}</h1>
-
 			<div v-if="threadStatus.loading">
 				Loading...
 			</div>
