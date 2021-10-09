@@ -31,5 +31,6 @@ Vue.mixin({ methods: { t, n } });
 
 export default new Vue({
 	el: '#content',
+    name: 'SmsBackupVault',
 	render: h => h(App),
 });
