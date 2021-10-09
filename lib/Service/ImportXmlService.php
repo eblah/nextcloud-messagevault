@@ -13,15 +13,12 @@ use OCA\SmsBackupVault\Db\ThreadAddress;
 use OCA\SmsBackupVault\Db\ThreadAddressMapper;
 use OCA\SmsBackupVault\Db\ThreadMapper;
 use OCA\SmsBackupVault\Storage\AttachmentStorage;
-use OCP\Files\IAppData;
+use OCP\Files\AlreadyExistsException;
 use OCP\IUserSession;
 use SimpleXMLElement;
 use XMLReader;
 
 use OCA\SmsBackupVault\Db\AddressMapper;
-
-use OCA\NotesTutorial\Db\Note;
-use OCA\NotesTutorial\Db\NoteMapper;
 
 class ImportXmlService {
 	private $cache_address = [];
@@ -40,7 +37,8 @@ class ImportXmlService {
 	public function __construct(AddressMapper $address_mapper, MessageMapper $message_mapper,
 								ThreadMapper $thread_mapper, ThreadAddressMapper $thread_address_mapper,
 								AttachmentMapper $attachment_mapper, AttachmentStorage $attachment_storage, IUserSession $user) {
-		$this->exclude_numbers = [$this->parseNumber(file_get_contents('/var/www/html/nextcloud/data/phone.txt'))];
+// @todo this should be part of config
+$this->exclude_numbers = [$this->parseNumber(file_get_contents('./data/phone.txt'))];
 
 		$this->address_mapper = $address_mapper;
 		$this->message_mapper = $message_mapper;
@@ -71,7 +69,7 @@ class ImportXmlService {
 			$this->findOrCreateAddress($exclude_number, null);
 		}
 ini_set('memory_limit', '512M');
-		$xmlfile = '/var/www/html/nextcloud/data/sms.xml';
+$xmlfile = './data/sms.xml';
 		$reader = new XMLReader();
 		$reader->open($xmlfile, null, LIBXML_PARSEHUGE | LIBXML_HTML_NOIMPLIED | LIBXML_BIGLINES);
 
@@ -90,15 +88,13 @@ ini_set('memory_limit', '512M');
 			if($reader->name == 'sms') $this->parseSms($message_data);
 			if($reader->name == 'mms') $this->parseMms($message_data);
 		}
-
-		die;
 	}
 
 	private function findOrCreateAddress(string $address, string $name = null): int {
 		if(!array_key_exists($address, $this->cache_address)) {
 			$id = $this->address_mapper->insert((new Address())->fromParams([
 				'address' => $address,
-				'userId' => $this->user,
+				'userId' => $this->user->getUID(),
 				'name' => $name
 			]))->getId();
 
@@ -113,7 +109,7 @@ ini_set('memory_limit', '512M');
 
 		if(!array_key_exists($hash, $this->cache_thread)) {
 			$id = $this->thread_mapper->insert((new Thread())->fromParams([
-				'userId' => $this->user,
+				'userId' => $this->user->getUID(),
 				'name' => $thread_name,
 				'uniqueHash' => $hash
 			]))->getId();
@@ -166,7 +162,7 @@ ini_set('memory_limit', '512M');
 		return $this->findOrCreateNewThread($thread_name, $address_ids);
 	}
 
-	private function createMessage(int $thread_id, int $address_id, int $date, int $rec, string $body = null) {
+	private function createMessage(int $thread_id, int $address_id, int $date, int $rec, string $body = null): int {
 		$hash = Message::buildHash($address_id, $date, $body); // Attachments could be attached to multi-messages
 
 		$m_id = $this->message_mapper->doesHashExist($hash);
@@ -182,10 +178,10 @@ ini_set('memory_limit', '512M');
 			$m_id = $entity->getId();
 		}
 
-		return $m_id;
+		return (int)$m_id;
 	}
 
-	private function parseSms($message_data) {
+	private function parseSms($message_data): void {
 		try {
 			$thread_id = $this->getThread(
 				[(string)$message_data['address']],
@@ -198,12 +194,14 @@ ini_set('memory_limit', '512M');
 			if($body === 'null') $body = '';
 			if($subject !== 'null') $body = $subject . "\n" . $body;
 
+			if($body === '') return; // Blank message
+
 			$this->createMessage(
 				$thread_id,
 				$this->getAddressId($message_data['address']),
 				$message_data['date'] / 1000,
 				(int)$message_data['type'] === 1 ? 1 : 0,
-				$body === '' ? null : $body
+				$body
 			);
 		} catch(Exception $e) {
 			echo $e->getMessage();
@@ -232,13 +230,20 @@ ini_set('memory_limit', '512M');
 				foreach($message_data->parts[0] as $part) {
 					if($part['ct'] == 'application/smil') continue;
 
+					$body = $part['text'] == 'null' ? null : $part['text'];
+
+					// We don't want a blank message; however, we DO want to add attachments to (potentially)
+					// blank messages, so they can be anchored to the thread
+					if($body === null && $part['ct'] == 'text/plain') continue;
+
 					$message_id = $this->createMessage(
 						$thread_id,
 						$this->getAddressId($addresses[0]),
 						$message_data['date'] / 1000,
 						(int)$message_data['m_type'] === 132 ? 1 : 0,
-						$part['text'] === 'null' ? null : $part['text']
+						$body
 					);
+
 					if($part['ct'] != 'text/plain') {
 						try {
 							$this->createAttachment($message_id, $thread_id, $part['ct'],
@@ -256,22 +261,33 @@ ini_set('memory_limit', '512M');
 		}
 	}
 
-	private function createAttachment(int $message_id, int $thread_id, string $type, string $data, string $name = null) {
+	private function createAttachment(int $message_id, int $thread_id, string $type, string $base64_data, string $name = null) {
 		$hash = Attachment::buildHash($message_id, $name, $this->user);
 
 		$attachment_id = $this->attachment_mapper->doesHashExist($hash);
 
 		if($attachment_id === null) {
+			$data = base64_decode($base64_data, true);
+			if($data === false) throw new Exception('Invalid attachment.');
+
+			$dims = $this->attachment_storage->getDimensions('data://text/plain;base64,' . $base64_data, $type);
+
 			$entity = $this->attachment_mapper->insert((new Attachment())->fromParams([
 				'messageId' => $message_id,
 				'name' => $name === 'null' ? null : $name,
 				'filetype' => $type,
+				'width' => $dims[0] ?? null,
+				'height' => $dims[1] ?? null,
 				'uniqueHash' => $hash
 			]));
 			$attachment_id = $entity->getId();
 
 			/** @todo This needs to be moved to the attachment service */
-			$this->attachment_storage->writeFile($thread_id, $attachment_id, base64_decode($data));
+			try {
+				$this->attachment_storage->writeFile($thread_id, $attachment_id, $data);
+			} catch(AlreadyExistsException $e) {
+				// Should be ok since only our app should be writing to files here
+			}
 		}
 	}
 

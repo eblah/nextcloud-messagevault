@@ -3,6 +3,7 @@ namespace OCA\SmsBackupVault\Db;
 
 use JsonSerializable;
 
+use OC\User\User;
 use OCP\AppFramework\Db\Entity,
 	\OCP\DB\Types as Types;
 
@@ -17,9 +18,9 @@ class Thread extends Entity implements JsonSerializable {
 		$this->addType('uniqueHash',Types::STRING);
 	}
 
-	public static function buildHash(array $address_ids, $user_id): string {
+	public static function buildHash(array $address_ids, User $user): string {
 		sort($address_ids);
-		return md5(implode(',', $address_ids) . '|' . $user_id);
+		return md5(implode(',', $address_ids) . '|' . $user->getUID());
 	}
 
 	public function jsonSerialize() {

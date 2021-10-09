@@ -72,7 +72,7 @@ class AttachmentMapper extends QBMapper {
 	public function findAllByMessageId(array $message_ids): array {
 		$qb = $this->db->getQueryBuilder();
 
-		$select = $qb->select('*')
+		$select = $qb->select('id', 'message_id', 'name', 'filetype', 'height', 'width')
 			->from($this->getTableName())
 			->where(
 				$qb->expr()->in('message_id', $qb->createNamedParameter($message_ids, $qb::PARAM_INT_ARRAY))

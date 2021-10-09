@@ -1,7 +1,9 @@
 <?php
 namespace OCA\SmsBackupVault\Storage;
 
+use OCP\Files\AlreadyExistsException;
 use OCP\Files\IRootFolder;
+use OCP\Files\Node;
 use OCP\Files\NotFoundException;
 use OCP\IURLGenerator;
 
@@ -18,44 +20,71 @@ class AttachmentStorage {
 		$this->user_id = $UserId;
 		$this->app_name = $AppName;
 		$this->url_generator = $url_generator;
+		$this->app_folder = '.' . $this->app_name;
 	}
 
 	private function getThreadPath($thread_id) {
-		return sprintf('.%s/%d', $this->app_name, $thread_id);;
+		return $this->app_folder . '/' . $thread_id;;
 	}
 
 	public function getFileUrl($thread_id, $attachment_id): ?string {
-		$user_folder = $this->storage->getUserFolder($this->user_id);
-		$attachment_path = $this->getThreadPath($thread_id) . '/' . $attachment_id;
+		$app_folder = $this->getOrCreateAppFolder();
+		$attachment_path = $thread_id . '/' . $attachment_id;
 
 		try {
-			$file = $user_folder->get($attachment_path);
-
-			return $this->url_generator->getWebroot() . '/remote.php/webdav/' . $attachment_path;
+			$app_folder->get($attachment_path);
+			return $this->url_generator->getWebroot() . '/remote.php/webdav/' . $this->app_folder . '/' .
+				$attachment_path;
 		} catch (Exception $e) {
 			return null;
 		}
 	}
 
-	public function writeFile($thread_id, $attachment_id, $data) {
+	private function getOrCreateAppFolder(): Node {
 		$user_folder = $this->storage->getUserFolder($this->user_id);
 
-		$folder = $this->getThreadPath($thread_id);
-
 		try {
-			$user_folder->get($folder);
-		} catch (NotFoundException $e) {
-			$user_folder->newFolder($folder);
+			$folder = $user_folder->get($this->app_folder);
+		} catch(NotFoundException $e) {
+			$user_folder->newFolder($this->app_folder);
+			$folder = $user_folder->get($this->app_folder);
+			$folder->newFile('.nomedia');
+			$folder->newFile('.nophoto');
 		}
 
-		$filename = $folder . '/' . $attachment_id;
+		return $folder;
+	}
+
+	/**
+	 * Gets dimensions if a video or image
+	 * @param $filename
+	 * @param $filetype
+	 * @return void
+	 */
+	public function getDimensions($filename, $filetype): ?array {
+		if (strpos($filetype, 'image/') !== 0) return null;
+
+		if(!($size = getimagesize($filename))) return null;
+		return [$size[0], $size[1]];
+	}
+
+	public function writeFile($thread_id, $attachment_id, $data) {
+		$app_folder = $this->getOrCreateAppFolder();
+
+		try {
+			$app_folder->get($thread_id . '/');
+		} catch (NotFoundException $e) {
+			$app_folder->newFolder($thread_id);
+		}
+
+		$filename = $thread_id . '/' . $attachment_id;
 		// check if file exists and write to it if possible
 		try {
-			if($user_folder->nodeExists($filename)) {
-				throw new StorageException('File already exists.');
+			if($app_folder->nodeExists($filename)) {
+				throw new AlreadyExistsException('File already exists.');
 			}
 
-			$user_folder->newFile($filename, $data);
+			$app_folder->newFile($filename, $data);
 		} catch(\OCP\Files\NotPermittedException $e) {
 			throw new StorageException('Cant write attachment');
 		}

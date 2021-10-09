@@ -1,21 +1,25 @@
 <template>
 	<div id="content" class="app-smsbackupvault">
 		<AppNavigation>
-			<ul>
-				<AppNavigationItem v-for="thread in threadList"
-					:key="thread.id"
-					:title="thread.name"
-					:class="{active: currentThreadId === thread.id}"
-					@click="openThread(thread)">
-					<template slot="actions">
-<!--						<ActionButton-->
-<!--							icon="icon-delete"-->
-<!--							@click="deleteThread(thread)">-->
-<!--							{{ t('smsbackupvault', 'Delete Thread') }}-->
-<!--						</ActionButton>-->
-					</template>
-				</AppNavigationItem>
-			</ul>
+			<template #list>
+					<AppNavigationItem v-for="thread in threadList"
+						:key="thread.id"
+						:title="thread.name"
+						:class="{active: currentThreadId === thread.id}"
+						@click="openThread(thread)">
+						<template slot="actions">
+	<!--						<ActionButton-->
+	<!--							icon="icon-delete"-->
+	<!--							@click="deleteThread(thread)">-->
+	<!--							{{ t('smsbackupvault', 'Delete Thread') }}-->
+	<!--						</ActionButton>-->
+						</template>
+					</AppNavigationItem>
+			</template>
+			<template #footer>
+				<AppNavigationSettings :title="t('smsbackupvault', 'Settings')">
+				</AppNavigationSettings>
+			</template>
 		</AppNavigation>
 		<AppContent>
 			<div class="section" v-if="currentThread">
@@ -26,17 +30,22 @@
 				</div>
 				<div id="smsbackupvaultMessageList" ref="messageList" v-else-if="currentThread.messages.length && !threadStatus.loading">
 					<div v-if="threadStatus.loading">Loading...</div>
-					<div v-else-if="!threadStatus.loading" v-for="message in currentThread.messages" style="padding: 10px; background: #ddd; margin-bottom: 5px">
-						<div v-if="message.received == 1">
-							Received:
+					<div v-else-if="!threadStatus.loading">
+						<div v-for="message in currentThread.messages" style="padding: 10px; background: #ddd; margin-bottom: 5px">
+							<div v-if="message.received == 1">
+								Received:
+							</div>
+							<div v-else>
+								Sent:
+							</div>
+							<div v-for="file in message.attachments">
+								<img v-if="file.filetype.match('image')" :src="file.url" :height="file.height" :width="file.width" style="max-width: 400px; height: auto;">
+								<video v-else-if="file.filetype.match('video')" width="400" controls>
+									<source :src="file.url" :type="file.filetype">
+								</video>
+							</div>
+							{{ message.body }}
 						</div>
-						<div v-else>
-							Sent:
-						</div>
-						<div v-for="file in message.attachments">
-							<img :src="file.url" style="max-width: 200px">
-						</div>
-						{{ message.body }}
 					</div>
 				</div>
 				<div v-else>
@@ -186,7 +195,7 @@ export default {
 			};
 			this.loading = false;
 
-			this.loadMessages();
+			await this.loadMessages();
 		},
 
 		async deleteThread(thread) {

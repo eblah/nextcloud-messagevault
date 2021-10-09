@@ -14,7 +14,7 @@ return [
 		'address' => ['url' => '/address'],
 	],
 	'routes' => [
-	   ['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
-	   ['name' => 'page#do_echo', 'url' => '/echo', 'verb' => 'POST'],
+		['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
+		['name' => 'page#import', 'url' => '/import', 'verb' => 'GET'],
 	]
 ];

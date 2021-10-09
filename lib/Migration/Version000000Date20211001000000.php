@@ -66,6 +66,16 @@ class Version000000Date20211001000000 extends SimpleMigrationStep {
 			'length' => 200,
 		]);
 
+		$table->addColumn('width', \OCP\DB\Types::INTEGER, [
+			'notnull' => false,
+			'unsigned' => true,
+		]);
+
+		$table->addColumn('height', \OCP\DB\Types::INTEGER, [
+			'notnull' => false,
+			'unsigned' => true,
+		]);
+
 		$table->addColumn('unique_hash', \OCP\DB\Types::STRING, [
 			'notnull' => true,
 			'length' => 32,
