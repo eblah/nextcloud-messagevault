@@ -10,7 +10,9 @@
 					</AppNavigationItem>
 			</template>
 			<template #footer>
-				<AppNavigationSettings :title="t('smsbackupvault', 'Settings')">
+				<AppNavigationSettings>
+					<SettingsConfig />
+					<SettingsImport />
 				</AppNavigationSettings>
 			</template>
 		</AppNavigation>
@@ -30,8 +32,13 @@ import AppContent from '@nextcloud/vue/dist/Components/AppContent';
 import AppNavigation from '@nextcloud/vue/dist/Components/AppNavigation';
 import AppNavigationItem from '@nextcloud/vue/dist/Components/AppNavigationItem';
 import AppNavigationNew from '@nextcloud/vue/dist/Components/AppNavigationNew';
+import AppSettingsSection from '@nextcloud/vue/dist/Components/AppSettingsSection';
+import AppSettingsDialog from '@nextcloud/vue/dist/Components/AppSettingsDialog';
 import AppNavigationSettings from '@nextcloud/vue/dist/Components/AppNavigationSettings';
+import Actions from '@nextcloud/vue/dist/Components/AppSettingsDialog';
 import Thread from './Views/Thread';
+import SettingsConfig from './Settings/Config';
+import SettingsImport from './Settings/Import';
 
 import '@nextcloud/dialogs/styles/toast.scss';
 import { generateUrl } from '@nextcloud/router';
@@ -46,14 +53,19 @@ export default {
 		AppNavigation,
 		AppNavigationItem,
 		AppNavigationNew,
+		AppSettingsSection,
+		AppSettingsDialog,
 		AppNavigationSettings,
+		Actions,
 		Thread,
+		SettingsConfig,
+		SettingsImport,
 	},
 	data() {
 		return {
 			threadList: [],
 			loading: true,
-			activeThreadId: 2
+			activeThreadId: 2,
 		};
 	},
 	computed: {

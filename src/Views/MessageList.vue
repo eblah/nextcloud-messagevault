@@ -94,7 +94,6 @@ export default {
 			this.loading = true;
 
 			const response = await axios.get(generateUrl(`/apps/smsbackupvault/thread/${this.thread_id}/messages?position=${load_pos}&limit=${this.pageMaxPer}`));
-			response.data.reverse();
 
 			if(direction === 'top') {
 				// Save current scroll position
@@ -102,7 +101,12 @@ export default {
 				response.data.forEach((msg) => {
 					this.messages.unshift(msg);
 				});
-			} else this.messages = response.data;
+			} else {
+				response.data.reverse();
+				this.messages = response.data;
+			}
+
+			// @todo cleanup messages outside of the viewport?
 
 			this.loading = false;
 		},

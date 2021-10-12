@@ -7,6 +7,7 @@ use Exception;
 use OCA\SmsBackupVault\Db\AttachmentMapper;
 use OCA\SmsBackupVault\Storage\AttachmentStorage;
 use OCP\Files\NotFoundException;
+use OCP\IUserSession;
 
 class AttachmentService {
 	private $mapper;
@@ -17,12 +18,12 @@ class AttachmentService {
 		$this->storage = $storage;
 	}
 
-	public function getAttachments(int $thread_id, array $message_ids = []): array {
+	public function getAttachments(IUserSession $user_session, int $thread_id, array $message_ids = []): array {
 		$attachments = $this->mapper->findAllByMessageId($message_ids);
 
 		foreach($attachments as $file) {
 			try {
-				$file->setUrl($this->storage->getFileUrl($thread_id, $file->getId()));
+				$file->setUrl($this->storage->getFileUrl($user_session->getUser(), $thread_id, $file->getId()));
 			} catch(NotFoundException $e) {
 				continue;
 			}

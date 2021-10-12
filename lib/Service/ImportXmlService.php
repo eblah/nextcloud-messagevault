@@ -3,6 +3,7 @@
 namespace OCA\SmsBackupVault\Service;
 
 use Exception;
+use OC\User\User;
 use OCA\SmsBackupVault\Db\Address;
 use OCA\SmsBackupVault\Db\Attachment;
 use OCA\SmsBackupVault\Db\AttachmentMapper;
@@ -14,13 +15,17 @@ use OCA\SmsBackupVault\Db\ThreadAddressMapper;
 use OCA\SmsBackupVault\Db\ThreadMapper;
 use OCA\SmsBackupVault\Storage\AttachmentStorage;
 use OCP\Files\AlreadyExistsException;
-use OCP\IUserSession;
+use OCP\Files\IRootFolder;
+use OCP\Files\NotFoundException;
+use OCP\IConfig;
 use SimpleXMLElement;
+use SmsBackupVault\ImportException;
 use XMLReader;
 
 use OCA\SmsBackupVault\Db\AddressMapper;
 
 class ImportXmlService {
+	private $app_name;
 	private $cache_address = [];
 	private $cache_thread = [];
 	private $exclude_numbers = [];
@@ -31,22 +36,26 @@ class ImportXmlService {
 	private $thread_mapper;
 	private $thread_address_mapper;
 	private $attachment_storage;
+	private $config;
+	private $storage;
 
+	/** @var User */
 	private $user;
 
 	public function __construct(AddressMapper $address_mapper, MessageMapper $message_mapper,
 								ThreadMapper $thread_mapper, ThreadAddressMapper $thread_address_mapper,
-								AttachmentMapper $attachment_mapper, AttachmentStorage $attachment_storage, IUserSession $user) {
-// @todo this should be part of config
-$this->exclude_numbers = [$this->parseNumber(file_get_contents('./data/phone.txt'))];
-
+								AttachmentMapper $attachment_mapper, AttachmentStorage $attachment_storage,
+								IConfig $config, IRootFolder $storage,
+								$appName) {
+		$this->app_name = $appName;
 		$this->address_mapper = $address_mapper;
 		$this->message_mapper = $message_mapper;
 		$this->thread_mapper = $thread_mapper;
 		$this->thread_address_mapper = $thread_address_mapper;
 		$this->attachment_storage = $attachment_storage;
 		$this->attachment_mapper = $attachment_mapper;
-		$this->user = $user->getUser();
+		$this->storage = $storage;
+		$this->config = $config;
 	}
 
 	private function cacheAddresses() {
@@ -61,17 +70,39 @@ $this->exclude_numbers = [$this->parseNumber(file_get_contents('./data/phone.txt
 		}
 	}
 
-	public function runImport() {
+	public function getFilePath(User $user, string $file): ?string {
+		$user_folder = $this->storage->getUserFolder($user->getUID());
+
+		try {
+			return $user_folder->getStorage()->getLocalFile(
+				$user_folder->get($file)
+					->getInternalPath()
+			);
+		} catch(NotFoundException $e) {
+			return false;
+		}
+	}
+
+	public function runImport(User $user, string $xml_file) {
+		$this->user = $user;
+
+		$this->exclude_numbers = explode(',',
+			$this->config->getUserValue($this->user->getUID(), $this->app_name, 'myAddress')
+		);
 		$this->cacheAddresses();
 		$this->cacheThread();
 
 		foreach($this->exclude_numbers as $exclude_number) {
-			$this->findOrCreateAddress($exclude_number, null);
+			$this->findOrCreateAddress($exclude_number, $this->user->getDisplayName());
+		}
+
+		if(!($full_path = $this->getFilePath($user, $xml_file))) {
+			throw new ImportException('Could not find the file to import.');
 		}
 ini_set('memory_limit', '512M');
-$xmlfile = './data/sms.xml';
+
 		$reader = new XMLReader();
-		$reader->open($xmlfile, null, LIBXML_PARSEHUGE | LIBXML_HTML_NOIMPLIED | LIBXML_BIGLINES);
+		$reader->open($full_path, null, LIBXML_PARSEHUGE | LIBXML_HTML_NOIMPLIED | LIBXML_BIGLINES);
 
 		while ($reader->read()) {
 			if(!in_array($reader->name, ['mms', 'sms']) || $reader->nodeType !== XMLReader::ELEMENT) continue;
@@ -132,7 +163,7 @@ $xmlfile = './data/sms.xml';
 		return $this->cache_address[$this->parseNumber($address)];
 	}
 
-	public function getThread(array $addresses, string $thread_name = null): int {
+	private function getThread(array $addresses, string $thread_name = null): int {
 		$address_ids = [];
 		if($thread_name === '(Unknown)') $thread_name = null;
 
@@ -284,7 +315,7 @@ $xmlfile = './data/sms.xml';
 
 			/** @todo This needs to be moved to the attachment service */
 			try {
-				$this->attachment_storage->writeFile($thread_id, $attachment_id, $data);
+				$this->attachment_storage->writeFile($this->user, $thread_id, $attachment_id, $data);
 			} catch(AlreadyExistsException $e) {
 				// Should be ok since only our app should be writing to files here
 			}

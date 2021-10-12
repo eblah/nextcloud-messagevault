@@ -1,6 +1,7 @@
 <?php
 namespace OCA\SmsBackupVault\Storage;
 
+use OC\User\User;
 use OCP\Files\AlreadyExistsException;
 use OCP\Files\IRootFolder;
 use OCP\Files\Node;
@@ -10,14 +11,12 @@ use OCP\IURLGenerator;
 class AttachmentStorage {
 	/** @var IRootStorage */
 	private $storage;
-	private $user_id;
 	private $app_name;
 	private $url_generator;
 
-	public function __construct(IRootFolder $storage, $UserId, $AppName,
+	public function __construct(IRootFolder $storage, $AppName,
 								IURLGenerator $url_generator) {
 		$this->storage = $storage;
-		$this->user_id = $UserId;
 		$this->app_name = $AppName;
 		$this->url_generator = $url_generator;
 		$this->app_folder = '.' . $this->app_name;
@@ -27,8 +26,8 @@ class AttachmentStorage {
 		return $this->app_folder . '/' . $thread_id;;
 	}
 
-	public function getFileUrl($thread_id, $attachment_id): ?string {
-		$app_folder = $this->getOrCreateAppFolder();
+	public function getFileUrl(User $user, $thread_id, $attachment_id): ?string {
+		$app_folder = $this->getOrCreateAppFolder($user);
 		$attachment_path = $thread_id . '/' . $attachment_id;
 
 		try {
@@ -40,8 +39,8 @@ class AttachmentStorage {
 		}
 	}
 
-	private function getOrCreateAppFolder(): Node {
-		$user_folder = $this->storage->getUserFolder($this->user_id);
+	private function getOrCreateAppFolder(User $user): Node {
+		$user_folder = $this->storage->getUserFolder($user->getUID());
 
 		try {
 			$folder = $user_folder->get($this->app_folder);
@@ -68,8 +67,8 @@ class AttachmentStorage {
 		return [$size[0], $size[1]];
 	}
 
-	public function writeFile($thread_id, $attachment_id, $data) {
-		$app_folder = $this->getOrCreateAppFolder();
+	public function writeFile(User $user, $thread_id, $attachment_id, $data) {
+		$app_folder = $this->getOrCreateAppFolder($user);
 
 		try {
 			$app_folder->get($thread_id . '/');

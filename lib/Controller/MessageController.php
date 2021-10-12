@@ -41,7 +41,7 @@ class MessageController extends Controller {
 		$messages = $this->service->findAll($thread_id, $position, $limit);
 
 		if(count($messages)) {
-			$attachments = $this->attachment_service->getAttachments($thread_id, array_column($messages, 'id'));
+			$attachments = $this->attachment_service->getAttachments($this->user, $thread_id, array_column($messages, 'id'));
 
 			foreach($messages as $message) {
 				$files = array_filter($attachments, function(Attachment $attachment) use ($message) {

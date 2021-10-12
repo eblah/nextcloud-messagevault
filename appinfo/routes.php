@@ -15,6 +15,8 @@ return [
 	],
 	'routes' => [
 		['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
+		['name' => 'page#config', 'url' => '/config', 'verb' => 'GET'],
+		['name' => 'page#configSave', 'url' => '/config/save', 'verb' => 'POST'],
 		['name' => 'page#import', 'url' => '/import', 'verb' => 'GET'],
 	]
 ];
