@@ -18,5 +18,6 @@ return [
 		['name' => 'page#config', 'url' => '/config', 'verb' => 'GET'],
 		['name' => 'page#configSave', 'url' => '/config/save', 'verb' => 'POST'],
 		['name' => 'page#import', 'url' => '/import', 'verb' => 'GET'],
+		['name' => 'page#importAdd', 'url' => '/import/new', 'verb' => 'POST'],
 	]
 ];

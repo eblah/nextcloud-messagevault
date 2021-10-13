@@ -3,7 +3,6 @@ namespace OCA\SmsBackupVault\Controller;
 
 use OCA\SmsBackupVault\Cron\XmlImport;
 use OCA\SmsBackupVault\Service\ImportXmlService;
-use OCA\SmsBackupVault\Storage\AttachmentStorage;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\BackgroundJob\IJobList;
 use OCP\IConfig;
@@ -44,33 +43,20 @@ class PageController extends Controller {
 
 	/**
 	 * @NoAdminRequired
-	 * @NoCSRFRequired
 	 */
-	public function import() {
-		var_dump($this->job_list->add(XmlImport::class, [
-			'uid' => $this->user_session->getUser()->getUID(),
-			'xml_file' => '/full.xml',
-		]));die;
-		return;
-		$this->import_xml
-			->getFilePath($this->user_session->getUser(), '/sms.xml')
-			->runImport();
-		die('imported');
-	}
-
-	public function importAdd(string $filename) {
-		//
+	public function importAdd(string $filename): DataResponse {
 		$this->job_list->add(XmlImport::class, [
 			'uid' => $this->user_session->getUser()->getUID(),
 			'xml_file' => $filename
 		]);
+
+		return new DataResponse(true);
 	}
 
 	/**
 	 * @NoAdminRequired
-	 * @NoCSRFRequired
 	 */
-	public function config() {
+	public function config(): DataResponse {
 		$user = $this->user_session->getUser()->getUID();
 
 		return new DataResponse([
@@ -81,7 +67,6 @@ class PageController extends Controller {
 
 	/**
 	 * @NoAdminRequired
-	 * @NoCSRFRequired
 	 */
 	public function configSave(string $myAddress, string $backupDir) {
 		$user = $this->user_session->getUser()->getUID();
@@ -92,7 +77,11 @@ class PageController extends Controller {
 			$this->config->setUserValue($user, $this->appName, 'myAddress', $myAddress);
 		}
 
-		$this->config->setUserValue($user, $this->appName, 'backupDir', $backupDir);
+		if($backupDir === '') {
+			$this->config->deleteUserValue($user, $this->appName, 'myAddress');
+		} else {
+			$this->config->setUserValue($user, $this->appName, 'backupDir', $backupDir);
+		}
 
 		return new DataResponse([]);
 	}
