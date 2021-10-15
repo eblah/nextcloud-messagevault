@@ -1,33 +1,33 @@
 <template>
-		<div class="message-list">
-			<div :class="{ 'icon-loading': loading }">
-				<div v-if="messages.length">
-					<MessageItem v-for="message in messages"
-											 :key="message.id"
-											 :body="message.body"
-											 :attachments="message.attachments"
-											 :timestamp="message.timestamp"
-											 :address-id="message.addressId"
-											 :received="message.received" />
-				</div>
-				<div v-else-if="loading">
-					Loading...
-				</div>
-				<div v-else>
-					No messages were found for this thread.
-				</div>
+	<div class="message-list">
+		<div :class="{ 'icon-loading': loading }">
+			<div v-if="messages.length">
+				<MessageItem v-for="message in messages"
+										:key="message.id"
+										:body="message.body"
+										:attachments="message.attachments"
+										:timestamp="message.timestamp"
+										:address-id="message.addressId"
+										:received="message.received" />
+			</div>
+			<div v-else-if="loading">
+				Loading...
+			</div>
+			<div v-else>
+				No messages were found for this thread.
 			</div>
 		</div>
+	</div>
 </template>
 
 <script>
-import axios from "@nextcloud/axios";
-import {generateUrl} from "@nextcloud/router";
+import axios from '@nextcloud/axios';
+import {generateUrl} from '@nextcloud/router';
 
 import MessageItem from './MessageItem';
 
 export default {
-	name: "MessageList",
+	name: 'MessageList',
 	components: {
 		MessageItem
 	},
@@ -130,7 +130,7 @@ export default {
 			}
 		},
 	}
-}
+};
 </script>
 
 <style scoped>

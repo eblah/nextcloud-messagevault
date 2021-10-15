@@ -27,36 +27,26 @@
 </template>
 
 <script>
-import ActionButton from '@nextcloud/vue/dist/Components/ActionButton';
 import AppContent from '@nextcloud/vue/dist/Components/AppContent';
 import AppNavigation from '@nextcloud/vue/dist/Components/AppNavigation';
 import AppNavigationItem from '@nextcloud/vue/dist/Components/AppNavigationItem';
-import AppNavigationNew from '@nextcloud/vue/dist/Components/AppNavigationNew';
-import AppSettingsSection from '@nextcloud/vue/dist/Components/AppSettingsSection';
-import AppSettingsDialog from '@nextcloud/vue/dist/Components/AppSettingsDialog';
 import AppNavigationSettings from '@nextcloud/vue/dist/Components/AppNavigationSettings';
-import Actions from '@nextcloud/vue/dist/Components/AppSettingsDialog';
 import Thread from './Views/Thread';
 import SettingsConfig from './Settings/Config';
 import SettingsImport from './Settings/Import';
 
 import '@nextcloud/dialogs/styles/toast.scss';
 import { generateUrl } from '@nextcloud/router';
-import { showError, showSuccess } from '@nextcloud/dialogs';
+import { showError } from '@nextcloud/dialogs';
 import axios from '@nextcloud/axios';
 
 export default {
 	name: 'messagevault',
 	components: {
-		ActionButton,
 		AppContent,
 		AppNavigation,
 		AppNavigationItem,
-		AppNavigationNew,
-		AppSettingsSection,
-		AppSettingsDialog,
 		AppNavigationSettings,
-		Actions,
 		Thread,
 		SettingsConfig,
 		SettingsImport,
@@ -65,7 +55,6 @@ export default {
 		return {
 			threadList: [],
 			loading: true,
-			activeThreadId: 2,
 		};
 	},
 	computed: {
@@ -87,7 +76,7 @@ export default {
 
 	methods: {
 		async deleteThread(thread) {
-
+			return thread;
 		},
 	},
 };

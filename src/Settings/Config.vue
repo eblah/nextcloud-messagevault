@@ -12,7 +12,7 @@
 				<div>
 					<label for="myAddress">{{ t('messagevault', 'Your addresses') }}</label>
 					<input type="text" id="myAddress" class="app-settings"
-								 v-model="config.myAddress"><br>
+							v-model="config.myAddress"><br>
 					<em>{{ t('messagevault', 'Backups do not always have your mobile number as the outgoing address. \
 						Enter your phone number here to ensure they are excluded. Separate additional numbers by a comma.\
 						Since addresses can be numbers or email addresses, nearly anything can be accepted here.') }}</em>
@@ -20,7 +20,7 @@
 				<div>
 					<label for="backupDir">{{ t('messagevault', 'Backup folder') }}</label>
 					<input type="text" id="backupDir" class="app-settings"
-								 v-model="config.backupDir"> <button @click="chooseFolder">Choose</button><br>
+							v-model="config.backupDir"> <button @click="chooseFolder">Choose</button><br>
 					<em>{{ t('messagevault', 'Path to where your XML backups are being uploaded from your mobile device.') }}</em>
 				</div>
 				<br>
@@ -34,20 +34,20 @@
 import AppSettingsDialog from '@nextcloud/vue/dist/Components/AppSettingsDialog';
 import AppSettingsSection from '@nextcloud/vue/dist/Components/AppSettingsSection';
 
-import axios from "@nextcloud/axios";
-import { generateUrl } from "@nextcloud/router";
+import axios from '@nextcloud/axios';
+import { generateUrl } from '@nextcloud/router';
 import { getFilePickerBuilder } from '@nextcloud/dialogs';
 
 const picker = getFilePickerBuilder(t('messagevault', 'Choose a folder to watch for new XML files'))
-		.setMultiSelect(false)
-		.setModal(true)
-		.setType(1)
-		.allowDirectories(true)
-		.setMimeTypeFilter(['folder'])
-		.build();
+	.setMultiSelect(false)
+	.setModal(true)
+	.setType(1)
+	.allowDirectories(true)
+	.setMimeTypeFilter(['folder'])
+	.build();
 
 export default {
-	name: "Config",
+	name: 'Config',
 	components: {
 		AppSettingsDialog,
 		AppSettingsSection,
@@ -77,7 +77,7 @@ export default {
 				const path = await picker.pick();
 				this.config.backupDir = path;
 			} catch (error) {
-				console.error('Could not pick folder.', error)
+				console.error('Could not pick folder.', error);
 			} finally {
 				this.loading = false;
 			}
@@ -90,7 +90,7 @@ export default {
 			this.loading = false;
 		},
 	},
-}
+};
 </script>
 
 <style scoped>

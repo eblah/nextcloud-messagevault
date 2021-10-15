@@ -31,6 +31,6 @@ Vue.mixin({ methods: { t, n } });
 
 export default new Vue({
 	el: '#content',
-    name: 'MessageVault',
+	name: 'MessageVault',
 	render: h => h(App),
 });

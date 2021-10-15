@@ -11,18 +11,18 @@
 import { getFilePickerBuilder } from '@nextcloud/dialogs';
 import { showError, showSuccess } from '@nextcloud/dialogs';
 import axios from '@nextcloud/axios';
-import { generateUrl } from "@nextcloud/router";
+import { generateUrl } from '@nextcloud/router';
 
 const picker = getFilePickerBuilder(t('messagevault', 'Choose an XML backup to import'))
-		.setMultiSelect(false)
-		.setModal(true)
-		.setType(1)
-		.allowDirectories(false)
-		.setMimeTypeFilter(['application/xml', 'text/xml'])
-		.build();
+	.setMultiSelect(false)
+	.setModal(true)
+	.setType(1)
+	.allowDirectories(false)
+	.setMimeTypeFilter(['application/xml', 'text/xml'])
+	.build();
 
 export default {
-	name: "Import",
+	name: 'Import',
 	methods: {
 		async processLocalFile(path) {
 			try {
@@ -41,17 +41,17 @@ export default {
 		 */
 		async openPicker() {
 			try {
-				this.loading = true
+				this.loading = true;
 				const path = await picker.pick();
-				await this.processLocalFile(path)
+				await this.processLocalFile(path);
 			} catch (error) {
-				console.error('Could not pick file.', error)
+				console.error('Could not pick file.', error);
 			} finally {
 				this.loading = false;
 			}
 		},
 	}
-}
+};
 </script>
 
 <style scoped>

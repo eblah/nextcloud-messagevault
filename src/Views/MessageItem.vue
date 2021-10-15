@@ -2,7 +2,7 @@
 	<div class="message-item" :class="{'message-sent': received == 0}">
 		{{ formattedDate }}, {{ addressId }}<br />
 		{{ body }}
-		<div v-for="file in attachments">
+		<div v-for="file in attachments" :key="file.id">
 			<img v-if="file.filetype.match('image')" :src="file.url" :height="file.height" :width="file.width" style="max-width: 400px; height: auto;">
 			<video v-else-if="file.filetype.match('video')" width="400" controls>
 				<source :src="file.url" :type="file.filetype">
@@ -15,7 +15,7 @@
 import moment from '@nextcloud/moment';
 
 export default {
-	name: "MessageItem",
+	name: 'MessageItem',
 	props: {
 		body: String|null,
 		received: Number,
@@ -33,7 +33,7 @@ export default {
 			return moment.unix(this.timestamp).format('LLLL');
 		}
 	}
-}
+};
 </script>
 
 <style scoped>
