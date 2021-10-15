@@ -84,7 +84,7 @@ class PageController extends Controller {
 		}
 
 		if($backupDir === '') {
-			$this->config->deleteUserValue($user, $this->appName, 'myAddress');
+			$this->config->deleteUserValue($user, $this->appName, 'backupDir');
 		} else {
 			$this->config->setUserValue($user, $this->appName, 'backupDir', $backupDir);
 		}
