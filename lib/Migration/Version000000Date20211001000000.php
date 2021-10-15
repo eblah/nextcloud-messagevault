@@ -1,6 +1,6 @@
 <?php
 
-namespace OCA\SmsBackupVault\Migration;
+namespace OCA\MessageVault\Migration;
 
 use Closure;
 use OCP\DB\ISchemaWrapper;

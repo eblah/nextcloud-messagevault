@@ -1,18 +1,23 @@
 <?php
-namespace OCA\SmsBackupVault\Storage;
+namespace OCA\MessageVault\Storage;
 
 use OC\User\User;
 use OCP\Files\AlreadyExistsException;
 use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
+use OCP\Files\NotPermittedException;
 use OCP\IURLGenerator;
 
 class AttachmentStorage {
 	/** @var IRootStorage */
 	private $storage;
+	/** @var string */
 	private $app_name;
+	/** @var IURLGenerator */
 	private $url_generator;
+	/** @var string  */
+	private $app_folder;
 
 	public function __construct(IRootFolder $storage, $AppName,
 								IURLGenerator $url_generator) {
@@ -20,10 +25,6 @@ class AttachmentStorage {
 		$this->app_name = $AppName;
 		$this->url_generator = $url_generator;
 		$this->app_folder = '.' . $this->app_name;
-	}
-
-	private function getThreadPath($thread_id) {
-		return $this->app_folder . '/' . $thread_id;;
 	}
 
 	public function getFileUrl(User $user, $thread_id, $attachment_id): ?string {
@@ -61,7 +62,7 @@ class AttachmentStorage {
 	 * @return void
 	 */
 	public function getDimensions($filename, $filetype): ?array {
-		if (strpos($filetype, 'image/') !== 0) return null;
+		if(strpos($filetype, 'image/') !== 0) return null;
 
 		if(!($size = getimagesize($filename))) return null;
 		return [$size[0], $size[1]];
@@ -84,7 +85,7 @@ class AttachmentStorage {
 			}
 
 			$app_folder->newFile($filename, $data);
-		} catch(\OCP\Files\NotPermittedException $e) {
+		} catch(NotPermittedException $e) {
 			throw new StorageException('Cant write attachment');
 		}
 	}

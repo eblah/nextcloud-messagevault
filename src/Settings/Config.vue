@@ -10,18 +10,18 @@
 				:class="{'icon-loading': loading}">
 			<AppSettingsSection title="Import Settings">
 				<div>
-					<label for="myAddress">{{ t('smsbackupvault', 'Your addresses') }}</label>
+					<label for="myAddress">{{ t('messagevault', 'Your addresses') }}</label>
 					<input type="text" id="myAddress" class="app-settings"
 								 v-model="config.myAddress"><br>
-					<em>{{ t('smsbackupvault', 'Backups do not always have your mobile number as the outgoing address. \
+					<em>{{ t('messagevault', 'Backups do not always have your mobile number as the outgoing address. \
 						Enter your phone number here to ensure they are excluded. Separate additional numbers by a comma.\
 						Since addresses can be numbers or email addresses, nearly anything can be accepted here.') }}</em>
 				</div>
 				<div>
-					<label for="backupDir">{{ t('smsbackupvault', 'Backup folder') }}</label>
+					<label for="backupDir">{{ t('messagevault', 'Backup folder') }}</label>
 					<input type="text" id="backupDir" class="app-settings"
 								 v-model="config.backupDir"> <button @click="chooseFolder">Choose</button><br>
-					<em>{{ t('smsbackupvault', 'Path to where your XML backups are being uploaded from your mobile device.') }}</em>
+					<em>{{ t('messagevault', 'Path to where your XML backups are being uploaded from your mobile device.') }}</em>
 				</div>
 				<br>
 				<button @click="saveSettings">Save</button>
@@ -38,7 +38,7 @@ import axios from "@nextcloud/axios";
 import { generateUrl } from "@nextcloud/router";
 import { getFilePickerBuilder } from '@nextcloud/dialogs';
 
-const picker = getFilePickerBuilder(t('smsbackupvault', 'Choose a folder to watch for new XML files'))
+const picker = getFilePickerBuilder(t('messagevault', 'Choose a folder to watch for new XML files'))
 		.setMultiSelect(false)
 		.setModal(true)
 		.setType(1)
@@ -66,7 +66,7 @@ export default {
 	methods: {
 		async openSettingsDialog() {
 			this.loading = true;
-			const response = await axios.get(generateUrl('/apps/smsbackupvault/config'));
+			const response = await axios.get(generateUrl('/apps/messagevault/config'));
 			this.config = response.data;
 			this.loading = false;
 			this.openSettings = true;
@@ -85,7 +85,7 @@ export default {
 
 		async saveSettings() {
 			this.loading = true;
-			await axios.post(generateUrl('/apps/smsbackupvault/config/save'), this.config);
+			await axios.post(generateUrl('/apps/messagevault/config/save'), this.config);
 			this.openSettings = false;
 			this.loading = false;
 		},

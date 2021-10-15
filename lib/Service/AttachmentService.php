@@ -1,11 +1,9 @@
 <?php
 
-namespace OCA\SmsBackupVault\Service;
+namespace OCA\MessageVault\Service;
 
-use Exception;
-
-use OCA\SmsBackupVault\Db\AttachmentMapper;
-use OCA\SmsBackupVault\Storage\AttachmentStorage;
+use OCA\MessageVault\Db\AttachmentMapper;
+use OCA\MessageVault\Storage\AttachmentStorage;
 use OCP\Files\NotFoundException;
 use OCP\IUserSession;
 

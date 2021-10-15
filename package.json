@@ -1,5 +1,5 @@
 {
-	"name": "smsbackupvault",
+	"name": "messagevault",
 	"description": "Add SMS/RCS/MMS backups to Nextcloud.",
 	"version": "1.0.0",
 	"author": "justin@eblah.com",

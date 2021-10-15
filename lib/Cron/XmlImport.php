@@ -1,7 +1,7 @@
 <?php
-namespace OCA\SmsBackupVault\Cron;
+namespace OCA\MessageVault\Cron;
 
-use OCA\SmsBackupVault\Service\ImportXmlService;
+use OCA\MessageVault\Service\ImportXmlService;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\QueuedJob;
 use OCP\IUserManager;

@@ -24,12 +24,10 @@ declare(strict_types=1);
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-namespace OCA\SmsBackupVault\Db;
+namespace OCA\MessageVault\Db;
 
-use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\QBMapper;
 use OCP\IDBConnection;
-use OCP\IUser;
 
 class MessageMapper extends QBMapper {
 	public const TABLE_NAME = 'sms_message';

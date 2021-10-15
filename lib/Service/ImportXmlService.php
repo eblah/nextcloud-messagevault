@@ -1,30 +1,29 @@
 <?php
 
-namespace OCA\SmsBackupVault\Service;
+namespace OCA\MessageVault\Service;
 
 use Exception;
 use OC\Files\Node\File;
 use OC\User\User;
-use OCA\SmsBackupVault\Db\Address;
-use OCA\SmsBackupVault\Db\Attachment;
-use OCA\SmsBackupVault\Db\AttachmentMapper;
-use OCA\SmsBackupVault\Db\Message;
-use OCA\SmsBackupVault\Db\MessageMapper;
-use OCA\SmsBackupVault\Db\Thread;
-use OCA\SmsBackupVault\Db\ThreadAddress;
-use OCA\SmsBackupVault\Db\ThreadAddressMapper;
-use OCA\SmsBackupVault\Db\ThreadMapper;
-use OCA\SmsBackupVault\Storage\AttachmentStorage;
+use OCA\MessageVault\Db\Address;
+use OCA\MessageVault\Db\Attachment;
+use OCA\MessageVault\Db\AttachmentMapper;
+use OCA\MessageVault\Db\Message;
+use OCA\MessageVault\Db\MessageMapper;
+use OCA\MessageVault\Db\Thread;
+use OCA\MessageVault\Db\ThreadAddress;
+use OCA\MessageVault\Db\ThreadAddressMapper;
+use OCA\MessageVault\Db\ThreadMapper;
+use OCA\MessageVault\Storage\AttachmentStorage;
 use OCP\Files\AlreadyExistsException;
 use OCP\Files\IRootFolder;
 use OCP\Files\NotFoundException;
 use OCP\IConfig;
 use Psr\Log\LoggerInterface;
 use SimpleXMLElement;
-use SmsBackupVault\ImportException;
+use OCA\MessageVault\Error\ImportException;
 use XMLReader;
-
-use OCA\SmsBackupVault\Db\AddressMapper;
+use OCA\MessageVault\Db\AddressMapper;
 
 class ImportXmlService {
 	private $app_name;

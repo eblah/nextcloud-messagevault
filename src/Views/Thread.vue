@@ -43,7 +43,7 @@ export default {
 		// 	id: this.id,
 		// };
 
-		const response = await axios.get(generateUrl(`/apps/smsbackupvault/thread/${this.id}`));
+		const response = await axios.get(generateUrl(`/apps/messagevault/thread/${this.id}`));
 		this.details = response.data;
 		this.loading = false;
 	},

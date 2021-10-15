@@ -1,8 +1,8 @@
 <?php
-namespace OCA\SmsBackupVault\Controller;
+namespace OCA\MessageVault\Controller;
 
-use OCA\SmsBackupVault\Cron\XmlImport;
-use OCA\SmsBackupVault\Service\ImportXmlService;
+use OCA\MessageVault\Cron\XmlImport;
+use OCA\MessageVault\Service\ImportXmlService;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\BackgroundJob\IJobList;
 use OCP\IConfig;
@@ -38,9 +38,9 @@ class PageController extends Controller {
 	 * @NoCSRFRequired
 	 */
 	public function index() {
-		Util::addScript('smsbackupvault', 'smsbackupvault-main');
+		Util::addScript('messagevault', 'messagevault-main');
 
-		return new TemplateResponse('smsbackupvault', 'index');  // templates/index.php
+		return new TemplateResponse('messagevault', 'index');  // templates/index.php
 	}
 
 	/**

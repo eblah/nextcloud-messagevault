@@ -1,15 +1,13 @@
 <?php
-namespace OCA\SmsBackupVault\Controller;
+namespace OCA\MessageVault\Controller;
 
-use OCA\SmsBackupVault\Service\ImportXmlService;
-use OCA\SmsBackupVault\Service\ThreadService;
-use OCA\SmsBackupVault\Storage\AttachmentStorage;
+use OCA\MessageVault\Service\ImportXmlService;
+use OCA\MessageVault\Service\ThreadService;
+use OCA\MessageVault\Storage\AttachmentStorage;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\IRequest;
-use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Controller;
 use OCP\IUserSession;
-use OCP\Util;
 
 class ThreadController extends Controller {
 	private $user_session;

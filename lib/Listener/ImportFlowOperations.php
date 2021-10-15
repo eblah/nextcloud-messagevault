@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace OCA\SmsBackupVault\Listener;
+namespace OCA\MessageVault\Listener;
 
-use OCA\SmsBackupVault\AppInfo\Application;
-use OCA\SmsBackupVault\Workflow\ImportOperation;
+use OCA\MessageVault\AppInfo\Application;
+use OCA\MessageVault\Workflow\ImportOperation;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
 use OCP\Util;
@@ -24,6 +24,7 @@ class ImportFlowOperations implements IEventListener {
 		if (!$event instanceof RegisterOperationsEvent) {
 			return;
 		}
+
 		$event->registerOperation($this->container->get(ImportOperation::class));
 		Util::addScript(Application::APP_ID, 'admin');
 	}

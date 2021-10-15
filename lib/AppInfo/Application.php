@@ -21,9 +21,9 @@ declare(strict_types=1);
  *
  */
 
-namespace OCA\SmsBackupVault\AppInfo;
+namespace OCA\MessageVault\AppInfo;
 
-use OCA\SmsBackupVault\Listener\ImportFlowOperations;
+use OCA\MessageVault\Listener\ImportFlowOperations;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
@@ -31,7 +31,7 @@ use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCP\WorkflowEngine\Events\RegisterOperationsEvent;
 
 class Application extends App implements IBootstrap {
-	public const APP_ID = 'smsbackupvault';
+	public const APP_ID = 'messagevault';
 
 	public function __construct() {
 		parent::__construct(self::APP_ID);

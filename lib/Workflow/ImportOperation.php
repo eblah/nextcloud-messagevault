@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace OCA\SmsBackupVault\Workflow;
+namespace OCA\MessageVault\Workflow;
 
-use OCA\SmsBackupVault\Cron\XmlImport;
+use OCA\MessageVault\Cron\XmlImport;
 use OCA\WorkflowEngine\Entity\File;
 use OCP\BackgroundJob\IJobList;
 use OCP\EventDispatcher\Event;
@@ -17,7 +17,7 @@ use OCP\Files\FileInfo;
 use OCP\Files\Node;
 use OCP\IURLGenerator;
 use Psr\Log\LoggerInterface;
-use OCA\SmsBackupVault\AppInfo\Application;
+use OCA\MessageVault\AppInfo\Application;
 
 class ImportOperation implements ISpecificOperation {
 	/** @var IJobList */

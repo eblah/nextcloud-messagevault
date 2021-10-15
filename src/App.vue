@@ -1,5 +1,5 @@
 <template>
-	<div id="content" class="app-smsbackupvault">
+	<div id="content" class="app-messagevault">
 		<AppNavigation :class="{ 'icon-loading': loading }">
 			<template #list>
 					<AppNavigationItem v-for="thread in threadList"
@@ -20,7 +20,7 @@
 			<Thread v-if="activeThreadId" :id="activeThreadId" :key="activeThreadId"></Thread>
 			<div v-else id="emptycontent">
 				<div class="icon-file" />
-				<h2>{{ t('smsbackupvault', 'Select a message thread to view...') }}</h2>
+				<h2>{{ t('messagevault', 'Select a message thread to view...') }}</h2>
 			</div>
 		</AppContent>
 	</div>
@@ -46,7 +46,7 @@ import { showError, showSuccess } from '@nextcloud/dialogs';
 import axios from '@nextcloud/axios';
 
 export default {
-	name: 'SmsBackupVault',
+	name: 'messagevault',
 	components: {
 		ActionButton,
 		AppContent,
@@ -76,7 +76,7 @@ export default {
 	 */
 	async mounted() {
 		try {
-			const response = await axios.get(generateUrl('/apps/smsbackupvault/thread'));
+			const response = await axios.get(generateUrl('/apps/messagevault/thread'));
 			this.threadList = response.data;
 		} catch (e) {
 			console.error(e);

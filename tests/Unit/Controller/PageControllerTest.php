@@ -1,12 +1,12 @@
 <?php
 
-namespace OCA\SmsBackupVault\Tests\Unit\Controller;
+namespace OCA\MessageVault\Tests\Unit\Controller;
 
 use PHPUnit_Framework_TestCase;
 
 use OCP\AppFramework\Http\TemplateResponse;
 
-use OCA\SmsBackupVault\Controller\PageController;
+use OCA\MessageVault\Controller\PageController;
 
 
 class PageControllerTest extends PHPUnit_Framework_TestCase {
@@ -17,7 +17,7 @@ class PageControllerTest extends PHPUnit_Framework_TestCase {
 		$request = $this->getMockBuilder('OCP\IRequest')->getMock();
 
 		$this->controller = new PageController(
-			'smsbackupvault', $request, $this->userId
+			'messagevault', $request, $this->userId
 		);
 	}
 

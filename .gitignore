@@ -1,2 +1,4 @@
 node_modules
 .DS_Store
+js/messagevault-main.js
+js/messagevault-main.js.map

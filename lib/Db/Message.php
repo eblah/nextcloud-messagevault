@@ -1,10 +1,10 @@
 <?php
-namespace OCA\SmsBackupVault\Db;
+namespace OCA\MessageVault\Db;
 
 use JsonSerializable;
 
-use OCP\AppFramework\Db\Entity,
-	\OCP\DB\Types as Types;
+use OCP\AppFramework\Db\Entity;
+use OCP\DB\Types as Types;
 
 class Message extends Entity implements JsonSerializable {
 	protected $threadId;

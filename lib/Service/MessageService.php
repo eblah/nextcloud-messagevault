@@ -1,19 +1,16 @@
 <?php
 
-namespace OCA\SmsBackupVault\Service;
+namespace OCA\MessageVault\Service;
 
-use Exception;
-
-use OCA\SmsBackupVault\Db\MessageMapper;
-use OCA\SmsBackupVault\Db\ThreadAddressMapper;
-use OCA\SmsBackupVault\Db\ThreadMapper;
+use OCA\MessageVault\Db\MessageMapper;
+use OCA\MessageVault\Db\ThreadAddressMapper;
+use OCA\MessageVault\Db\ThreadMapper;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 
 use OCA\NotesTutorial\Db\Note;
 use OCA\NotesTutorial\Db\NoteMapper;
 use OCP\IUserSession;
-
 
 class MessageService {
 	private $message_mapper;

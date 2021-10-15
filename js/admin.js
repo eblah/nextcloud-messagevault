@@ -1,6 +1,6 @@
 (function() {
     OCA.WorkflowEngine.registerOperator({
-        id: 'OCA\\SmsBackupVault\\Operation',
+        id: 'OCA\\MessageVault\\Operation',
         operation: '',
         options: null
     });

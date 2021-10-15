@@ -1,6 +1,6 @@
 <?php
 
-namespace OCA\SmsBackupVault\Tests\Integration\Controller;
+namespace OCA\MessageVault\Tests\Integration\Controller;
 
 use OCP\AppFramework\App;
 use Test\TestCase;
@@ -17,13 +17,13 @@ class AppTest extends TestCase {
 
     public function setUp() {
         parent::setUp();
-        $app = new App('smsbackupvault');
+        $app = new App('messagevault');
         $this->container = $app->getContainer();
     }
 
     public function testAppInstalled() {
         $appManager = $this->container->query('OCP\App\IAppManager');
-        $this->assertTrue($appManager->isInstalled('smsbackupvault'));
+        $this->assertTrue($appManager->isInstalled('messagevault'));
     }
 
 }

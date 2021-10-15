@@ -13,7 +13,7 @@ import { showError, showSuccess } from '@nextcloud/dialogs';
 import axios from '@nextcloud/axios';
 import { generateUrl } from "@nextcloud/router";
 
-const picker = getFilePickerBuilder(t('smsbackupvault', 'Choose an XML backup to import'))
+const picker = getFilePickerBuilder(t('messagevault', 'Choose an XML backup to import'))
 		.setMultiSelect(false)
 		.setModal(true)
 		.setType(1)
@@ -26,10 +26,10 @@ export default {
 	methods: {
 		async processLocalFile(path) {
 			try {
-				const response = await axios.post(generateUrl('/apps/smsbackupvault/import/new'), {
+				const response = await axios.post(generateUrl('/apps/messagevault/import/new'), {
 					filename: path
 				});
-				if(response.data) showSuccess(t('smsbackupvault', 'This backup will be processed soon.'));
+				if(response.data) showSuccess(t('messagevault', 'This backup will be processed soon.'));
 					else throw false;
 			} catch (e) {
 				showError('There was an error adding this import.');

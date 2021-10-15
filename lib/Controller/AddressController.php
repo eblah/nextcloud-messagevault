@@ -1,15 +1,13 @@
 <?php
-namespace OCA\SmsBackupVault\Controller;
+namespace OCA\MessageVault\Controller;
 
-use OCA\SmsBackupVault\Service\ImportXmlService;
-use OCA\SmsBackupVault\Service\AddressService;
-use OCA\SmsBackupVault\Storage\AttachmentStorage;
+use OCA\MessageVault\Service\ImportXmlService;
+use OCA\MessageVault\Service\AddressService;
+use OCA\MessageVault\Storage\AttachmentStorage;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\IRequest;
-use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Controller;
 use OCP\IUserSession;
-use OCP\Util;
 
 class AddressController extends Controller {
     private $user_session;
