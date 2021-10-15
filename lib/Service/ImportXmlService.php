@@ -3,6 +3,7 @@
 namespace OCA\SmsBackupVault\Service;
 
 use Exception;
+use OC\Files\Node\File;
 use OC\User\User;
 use OCA\SmsBackupVault\Db\Address;
 use OCA\SmsBackupVault\Db\Attachment;
@@ -18,6 +19,7 @@ use OCP\Files\AlreadyExistsException;
 use OCP\Files\IRootFolder;
 use OCP\Files\NotFoundException;
 use OCP\IConfig;
+use Psr\Log\LoggerInterface;
 use SimpleXMLElement;
 use SmsBackupVault\ImportException;
 use XMLReader;
@@ -38,6 +40,8 @@ class ImportXmlService {
 	private $attachment_storage;
 	private $config;
 	private $storage;
+	/** @var LoggerInterface */
+	private $logger;
 
 	/** @var User */
 	private $user;
@@ -45,7 +49,7 @@ class ImportXmlService {
 	public function __construct(AddressMapper $address_mapper, MessageMapper $message_mapper,
 								ThreadMapper $thread_mapper, ThreadAddressMapper $thread_address_mapper,
 								AttachmentMapper $attachment_mapper, AttachmentStorage $attachment_storage,
-								IConfig $config, IRootFolder $storage,
+								IConfig $config, IRootFolder $storage, LoggerInterface $logger,
 								$appName) {
 		$this->app_name = $appName;
 		$this->address_mapper = $address_mapper;
@@ -56,6 +60,7 @@ class ImportXmlService {
 		$this->attachment_mapper = $attachment_mapper;
 		$this->storage = $storage;
 		$this->config = $config;
+		$this->logger = $logger;
 	}
 
 	private function cacheAddresses() {
@@ -70,12 +75,22 @@ class ImportXmlService {
 		}
 	}
 
-	public function getFilePath(User $user, string $file): ?string {
+	public function getNodeFromFilename(User $user, string $file): ?File {
+		$user_folder = $this->storage->getUserFolder($user->getUID());
+
+		try {
+			return $user_folder->get($file);
+		} catch(NotFoundException $e) {
+			return null;
+		}
+	}
+
+	public function getFilePath(User $user, int $file_id): ?string {
 		$user_folder = $this->storage->getUserFolder($user->getUID());
 
 		try {
 			return $user_folder->getStorage()->getLocalFile(
-				$user_folder->get($file)
+				$user_folder->getId($file_id)
 					->getInternalPath()
 			);
 		} catch(NotFoundException $e) {
@@ -83,7 +98,7 @@ class ImportXmlService {
 		}
 	}
 
-	public function runImport(User $user, string $xml_file) {
+	public function runImport(User $user, int $file_id) {
 		$this->user = $user;
 
 		$this->exclude_numbers = explode(',',
@@ -96,10 +111,9 @@ class ImportXmlService {
 			$this->findOrCreateAddress($exclude_number, $this->user->getDisplayName());
 		}
 
-		if(!($full_path = $this->getFilePath($user, $xml_file))) {
+		if(!($full_path = $this->getFilePath($user, $file_id))) {
 			throw new ImportException('Could not find the file to import.');
 		}
-ini_set('memory_limit', '512M');
 
 		$reader = new XMLReader();
 		$reader->open($full_path, null, LIBXML_PARSEHUGE | LIBXML_HTML_NOIMPLIED | LIBXML_BIGLINES);
@@ -110,9 +124,7 @@ ini_set('memory_limit', '512M');
 			try {
 				$message_data = new SimpleXMLElement($reader->readOuterXml(), LIBXML_PARSEHUGE | LIBXML_HTML_NOIMPLIED | LIBXML_BIGLINES);
 			} catch(Exception $e) {
-				// @todo log these someway
-				//var_dump($reader->readOuterXml());
-				//echo $e->getMessage();
+				$this->logger->error('Could not parse xml: ' . $e->getMessage());
 				continue;
 			}
 
@@ -235,8 +247,7 @@ ini_set('memory_limit', '512M');
 				$body
 			);
 		} catch(Exception $e) {
-			echo $e->getMessage();
-			// @todo handle malformed messages
+			$this->logger->error('Malformed SMS message: ' . $e->getMessage());
 			return; // Bad message
 		}
 	}
@@ -286,8 +297,7 @@ ini_set('memory_limit', '512M');
 				}
 			}
 		} catch(Exception $e) {
-			echo $e->getMessage();
-			// @todo handle malformed messages
+			$this->logger->error('Malformed MMS message: ' . $e->getMessage());
 			return; // Bad message
 		}
 	}

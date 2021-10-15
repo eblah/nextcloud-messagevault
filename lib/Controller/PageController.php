@@ -11,6 +11,7 @@ use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Controller;
 use OCP\IUserSession;
 use OCP\Util;
+use Psr\Log\LoggerInterface;
 
 class PageController extends Controller {
 	private $config;
@@ -23,6 +24,7 @@ class PageController extends Controller {
 								ImportXmlService $import_xml,
 								IConfig $config,
 								IUserSession $user_session,
+								LoggerInterface $log,
 								IJobList $job_list) {
 		parent::__construct($AppName, $request);
 		$this->import_xml = $import_xml;
@@ -45,10 +47,14 @@ class PageController extends Controller {
 	 * @NoAdminRequired
 	 */
 	public function importAdd(string $filename): DataResponse {
-		$this->job_list->add(XmlImport::class, [
-			'uid' => $this->user_session->getUser()->getUID(),
-			'xml_file' => $filename
-		]);
+		$file_id = $this->import_xml->getNodeFromFilename($this->user_session->getUser(), $filename);
+
+		if($file_id !== null) {
+			$this->job_list->add(XmlImport::class, [
+				'uid' => $this->user_session->getUser()->getUID(),
+				'file_id' => $file_id->getId()
+			]);
+		}
 
 		return new DataResponse(true);
 	}
