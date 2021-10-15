@@ -90,7 +90,7 @@ class ImportXmlService {
 
 		try {
 			return $user_folder->getStorage()->getLocalFile(
-				$user_folder->getId($file_id)
+				$user_folder->getById($file_id)[0]
 					->getInternalPath()
 			);
 		} catch(NotFoundException $e) {
@@ -115,6 +115,7 @@ class ImportXmlService {
 			throw new ImportException('Could not find the file to import.');
 		}
 
+		$this->logger->info('Starting an import of ' . $full_path);
 		$reader = new XMLReader();
 		$reader->open($full_path, null, LIBXML_PARSEHUGE | LIBXML_HTML_NOIMPLIED | LIBXML_BIGLINES);
 
@@ -131,6 +132,7 @@ class ImportXmlService {
 			if($reader->name == 'sms') $this->parseSms($message_data);
 			if($reader->name == 'mms') $this->parseMms($message_data);
 		}
+		$this->logger->info('Completed import.');
 	}
 
 	private function findOrCreateAddress(string $address, string $name = null): int {

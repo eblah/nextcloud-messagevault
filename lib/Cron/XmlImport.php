@@ -20,7 +20,7 @@ class XmlImport extends QueuedJob {
 
 	protected function run($argument) {
 		if(($user = $this->user_manager->get($argument['uid'])) !== null) {
-			$this->service->runImport($user, $argument['xml_file']);
+			$this->service->runImport($user, $argument['file_id']);
 		}
 	}
 }
