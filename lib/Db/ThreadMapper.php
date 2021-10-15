@@ -32,7 +32,7 @@ use OCP\AppFramework\Db\QBMapper;
 use OCP\IDBConnection;
 
 class ThreadMapper extends QBMapper {
-	public const TABLE_NAME = 'sms_thread';
+	public const TABLE_NAME = 'msgvault_thread';
 
 	public function __construct(IDBConnection $db) {
 		parent::__construct($db, self::TABLE_NAME, Thread::class);

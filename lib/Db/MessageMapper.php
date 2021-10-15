@@ -30,7 +30,7 @@ use OCP\AppFramework\Db\QBMapper;
 use OCP\IDBConnection;
 
 class MessageMapper extends QBMapper {
-	public const TABLE_NAME = 'sms_message';
+	public const TABLE_NAME = 'msgvault_message';
 
 	public function __construct(IDBConnection $db) {
 		parent::__construct($db, self::TABLE_NAME, Message::class);

@@ -30,7 +30,7 @@ use OCP\AppFramework\Db\QBMapper;
 use OCP\IDBConnection;
 
 class ThreadAddressMapper extends QBMapper {
-	public const TABLE_NAME = 'sms_thread_address';
+	public const TABLE_NAME = 'msgvault_thread_address';
 
 	public function __construct(IDBConnection $db) {
 		parent::__construct($db, self::TABLE_NAME, ThreadAddress::class);

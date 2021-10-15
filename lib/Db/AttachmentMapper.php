@@ -30,7 +30,7 @@ use OCP\AppFramework\Db\QBMapper;
 use OCP\IDBConnection;
 
 class AttachmentMapper extends QBMapper {
-	public const TABLE_NAME = 'sms_attachment';
+	public const TABLE_NAME = 'msgvault_attachment';
 
 	public function __construct(IDBConnection $db) {
 		parent::__construct($db, self::TABLE_NAME, Attachment::class);

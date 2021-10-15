@@ -1,4 +1,4 @@
-# Sms Backup Vault
+# Message Vault for NextCloud
 Place this app in **nextcloud/apps/**
 
 ## Building the app

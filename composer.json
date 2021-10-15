@@ -1,6 +1,6 @@
 {
     "name": "eblah/sms-backup-vault",
-    "description": "SMS Backup Vault",
+    "description": "Message Vault -- A secure home for all your old SMS, RCS, and MMS messages.",
     "type": "project",
     "license": "AGPL",
     "authors": [
