@@ -78,4 +78,15 @@ class AttachmentMapper extends QBMapper {
 
 		return $this->findEntities($select);
 	}
+
+	public function deleteMessages(array $message_ids): void {
+		if(!count($message_ids)) return;
+
+		$qb = $this->db->getQueryBuilder();
+		$qb->delete($this->getTableName())
+			->where(
+				$qb->expr()->in('message_id', $qb->createNamedParameter($message_ids, $qb::PARAM_INT_ARRAY))
+			);
+		$qb->execute();
+	}
 }

@@ -21,7 +21,6 @@ class AddressController extends Controller {
 
     /**
      * @NoAdminRequired
-     * @NoCSRFRequired
      */
     public function index(): DataResponse {
         return new DataResponse($this->service->findAll($this->user_session));

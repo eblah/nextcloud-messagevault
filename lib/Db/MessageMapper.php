@@ -54,6 +54,25 @@ class MessageMapper extends QBMapper {
 		return $this->findEntities($select);
 	}
 
+	/**
+	 * @return Message[]
+	 */
+	public function findAllMessageIds($thread_id): array {
+		$qb = $this->db->getQueryBuilder();
+
+		$select = $qb->select('id')
+			->from($this->getTableName())
+			->where(
+				$qb->expr()->eq('thread_id', $qb->createNamedParameter($thread_id))
+			);
+
+		$result = $select->executeQuery();
+		$messages = $result->fetchAll();
+		$result->closeCursor();
+
+		return array_column($messages, 'id');
+	}
+
 	public function getMessageCount(int $thread_id): int {
 		$qb = $this->db->getQueryBuilder();
 
@@ -98,5 +117,14 @@ class MessageMapper extends QBMapper {
 			);
 
 		return $this->findEntities($select);
+	}
+
+	public function deleteThreadMessages(int $thread_id): void {
+		$qb = $this->db->getQueryBuilder();
+		$qb->delete($this->getTableName())
+			->where(
+				$qb->expr()->eq('thread_id', $qb->createNamedParameter($thread_id))
+			);
+		$qb->execute();
 	}
 }

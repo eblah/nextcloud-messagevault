@@ -2,7 +2,9 @@
 namespace OCA\MessageVault\Controller;
 
 use OCA\MessageVault\Cron\XmlImport;
+use OCA\MessageVault\Db\Message;
 use OCA\MessageVault\Service\ImportXmlService;
+use OCA\MessageVault\Service\MessageService;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\BackgroundJob\IJobList;
 use OCP\IConfig;
@@ -11,6 +13,7 @@ use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Controller;
 use OCP\IUserSession;
 use OCP\Util;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
 class PageController extends Controller {
@@ -31,6 +34,7 @@ class PageController extends Controller {
 		$this->user_session = $user_session;
 		$this->config = $config;
 		$this->job_list = $job_list;
+		$this->container = $container;
 	}
 
 	/**

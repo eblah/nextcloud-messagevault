@@ -2,6 +2,7 @@
 
 namespace OCA\MessageVault\Service;
 
+use OC\User\User;
 use OCA\MessageVault\Db\AttachmentMapper;
 use OCA\MessageVault\Storage\AttachmentStorage;
 use OCP\Files\NotFoundException;
@@ -28,5 +29,10 @@ class AttachmentService {
 		}
 
 		return $attachments;
+	}
+
+	public function delete(User $user, int $thread_id, array $message_ids) {
+		$this->storage->deleteThread($user, $thread_id);
+		$this->mapper->deleteMessages($message_ids);
 	}
 }

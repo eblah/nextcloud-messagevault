@@ -1,6 +1,7 @@
 <?php
 namespace OCA\MessageVault\Storage;
 
+use OC\Files\Node\Folder;
 use OC\User\User;
 use OCP\Files\AlreadyExistsException;
 use OCP\Files\IRootFolder;
@@ -8,6 +9,7 @@ use OCP\Files\Node;
 use OCP\Files\NotFoundException;
 use OCP\Files\NotPermittedException;
 use OCP\IURLGenerator;
+use Sabre\DAV\Exception\NotFound;
 
 class AttachmentStorage {
 	/** @var IRootStorage */
@@ -87,6 +89,17 @@ class AttachmentStorage {
 			$app_folder->newFile($filename, $data);
 		} catch(NotPermittedException $e) {
 			throw new StorageException('Cant write attachment');
+		}
+	}
+
+	public function deleteThread(User $user, $thread_id) {
+		$app_folder = $this->getOrCreateAppFolder($user);
+
+		try {
+			/** @var Folder $folder */
+			$folder = $app_folder->get($thread_id . '/');
+			$folder->delete();
+		} catch(NotFoundException $e) {
 		}
 	}
 }

@@ -64,4 +64,13 @@ class ThreadAddressMapper extends QBMapper {
 
 		return $this->findEntities($select);
 	}
+
+	public function deleteThread(int $thread_id) {
+		$qb = $this->db->getQueryBuilder();
+		$qb->delete($this->getTableName())
+			->where(
+				$qb->expr()->eq('thread_id', $qb->createNamedParameter($thread_id))
+			);
+		$qb->execute();
+	}
 }

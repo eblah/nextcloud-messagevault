@@ -7,6 +7,12 @@
 						:title="thread.name"
 						:class="{active: activeThreadId === thread.id}"
 						@click="activeThreadId = thread.id">
+						<template slot="actions">
+							<ActionButton icon="icon-delete"
+														@click="deleteThread(thread)">
+								{{ t('messagevault', 'Delete Thread') }}
+							</ActionButton>
+						</template>
 					</AppNavigationItem>
 			</template>
 			<template #footer>
@@ -30,6 +36,7 @@
 import AppContent from '@nextcloud/vue/dist/Components/AppContent';
 import AppNavigation from '@nextcloud/vue/dist/Components/AppNavigation';
 import AppNavigationItem from '@nextcloud/vue/dist/Components/AppNavigationItem';
+import ActionButton from '@nextcloud/vue/dist/Components/ActionButton';
 import AppNavigationSettings from '@nextcloud/vue/dist/Components/AppNavigationSettings';
 import Thread from './Views/Thread';
 import SettingsConfig from './Settings/Config';
@@ -41,12 +48,13 @@ import { showError } from '@nextcloud/dialogs';
 import axios from '@nextcloud/axios';
 
 export default {
-	name: 'messagevault',
+	name: 'MessageVault',
 	components: {
 		AppContent,
 		AppNavigation,
 		AppNavigationItem,
 		AppNavigationSettings,
+		ActionButton,
 		Thread,
 		SettingsConfig,
 		SettingsImport,
@@ -55,6 +63,7 @@ export default {
 		return {
 			threadList: [],
 			loading: true,
+			activeThreadId: null,
 		};
 	},
 	computed: {
@@ -75,8 +84,26 @@ export default {
 	},
 
 	methods: {
-		async deleteThread(thread) {
-			return thread;
+		async deleteThreadConfirm(confirm) {
+			if(!confirm) return;
+
+			await axios.delete(generateUrl('/apps/messagevault/thread/' + this.activeThreadId));
+
+			const idx = this.threadList.findIndex(i => i.id === this.activeThreadId);
+			this.$delete(this.threadList, idx);
+			this.activeThreadId = null;
+		},
+
+		deleteThread(thread) {
+			this.activeThreadId = thread.id;
+
+			OC.dialogs.confirm(
+					t('messagevault', `This will delete the thread "${thread.name}". All messages and attachments associated with it will be removed. ` +
+							'Are you sure you want to do that?'),
+					t('messagevault', 'Delete thread?', { threadName: thread.name }),
+					this.deleteThreadConfirm,
+					true
+			);
 		},
 	},
 };

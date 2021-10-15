@@ -3,14 +3,6 @@
 namespace OCA\MessageVault\Service;
 
 use OCA\MessageVault\Db\MessageMapper;
-use OCA\MessageVault\Db\ThreadAddressMapper;
-use OCA\MessageVault\Db\ThreadMapper;
-use OCP\AppFramework\Db\DoesNotExistException;
-use OCP\AppFramework\Db\MultipleObjectsReturnedException;
-
-use OCA\NotesTutorial\Db\Note;
-use OCA\NotesTutorial\Db\NoteMapper;
-use OCP\IUserSession;
 
 class MessageService {
 	private $message_mapper;
@@ -20,8 +12,14 @@ class MessageService {
 	}
 
 	public function findAll(int $thread_id, int $page = 0, int $limit = 100) {
-		$messages = $this->message_mapper->findAll($thread_id, $page, $limit);
+		return $this->message_mapper->findAll($thread_id, $page, $limit);
+	}
 
-		return $messages;
+	public function findAllMessageIds(int $thread_id): array {
+		return $this->message_mapper->findAllMessageIds($thread_id);
+	}
+
+	public function deleteThreadMessages(int $thread_id): void {
+		$this->message_mapper->deleteThreadMessages($thread_id);
 	}
 }

@@ -3,9 +3,10 @@
 namespace OCA\MessageVault\Service;
 
 use OCA\MessageVault\Db\MessageMapper;
+use OCA\MessageVault\Db\Thread;
+use OCA\MessageVault\Db\ThreadAddress;
 use OCA\MessageVault\Db\ThreadAddressMapper;
 use OCA\MessageVault\Db\ThreadMapper;
-use OCA\MessageVault\Storage\AttachmentStorage;
 use OCP\IUserSession;
 
 class ThreadService {
@@ -43,5 +44,13 @@ class ThreadService {
 			'name' => $details[0]->getName(),
 			'total' => $this->message_mapper->getMessageCount($id)
 		];
+	}
+
+	public function delete(int $thread_id): void {
+		$this->thread_address_mapper->deleteThread($thread_id);
+
+		$thread = new Thread();
+		$thread->setId($thread_id);
+		$this->thread_mapper->delete($thread);
 	}
 }

@@ -17,6 +17,7 @@ class MessageController extends Controller {
 	private $user;
 	private $service;
 	private $attachment_service;
+	private $thread_service;
 
 	public function __construct($AppName, IRequest $request, MessageService $service,
 								ThreadService $thread_service, AttachmentService $attachment_service, IUserSession $userSession) {
@@ -29,7 +30,6 @@ class MessageController extends Controller {
 
 	/**
 	 * @NoAdminRequired
-	 * @NoCSRFRequired
 	 */
 	public function index(int $thread_id, int $position = 0, $limit = 100): DataResponse {
 		if(!$this->thread_service->hasPermission($this->user, $thread_id)) {
