@@ -1,5 +1,5 @@
 <template>
-	<div class="message-item" :class="{'message-sent': received == 0, combined: combined}">
+	<div class="message-item" :class="{'message-sent': received === 0, combined: combined}">
 		<div v-if="body !== null" class="message-text">
 			{{ body }}
 		</div>
@@ -13,7 +13,12 @@
 			/>
 		</div>
 		<div class="message-address">
-			{{ formattedDate }} by {{ addressId }}
+			<div v-if="received === 1">
+				{{ t('messagevault', '{date} by {name}', { date: formattedDate, name: addressName }) }}
+			</div>
+			<div v-else>
+				{{ formattedDate }}
+			</div>
 		</div>
 	</div>
 </template>
@@ -43,6 +48,10 @@ export default {
 	computed: {
 		formattedDate() {
 			return moment.unix(this.timestamp).format('LLLL');
+		},
+
+		addressName() {
+			return this.getAddressById(this.addressId).name;
 		}
 	}
 };

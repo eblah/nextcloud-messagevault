@@ -27,7 +27,10 @@ import App from './App';
 // eslint-disable-next-line
 __webpack_public_path__ = generateFilePath(appName, '', 'js/');
 
+import Address from './Components/Address';
+
 Vue.mixin({ methods: { t, n } });
+Vue.use(Address);
 
 export default new Vue({
 	el: '#content',

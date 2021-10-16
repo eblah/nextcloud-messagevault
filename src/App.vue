@@ -41,6 +41,7 @@ import AppNavigationSettings from '@nextcloud/vue/dist/Components/AppNavigationS
 import Thread from './Views/Thread';
 import SettingsConfig from './Settings/Config';
 import SettingsImport from './Settings/Import';
+import Address from './Components/Address';
 
 import '@nextcloud/dialogs/styles/toast.scss';
 import { generateUrl } from '@nextcloud/router';
@@ -58,6 +59,7 @@ export default {
 		Thread,
 		SettingsConfig,
 		SettingsImport,
+		Address,
 	},
 	data() {
 		return {
@@ -74,6 +76,8 @@ export default {
 	 */
 	async mounted() {
 		try {
+			await this.loadAddresses();
+
 			const response = await axios.get(generateUrl('/apps/messagevault/thread'));
 			this.threadList = response.data;
 		} catch (e) {

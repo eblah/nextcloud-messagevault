@@ -3,7 +3,7 @@
 		<div v-if="details">
 			<h2>{{ details.name }}</h2>
 			<div class="stats">
-				{{ n('msgvault', '{total} message', '{total} messages', details.total, {total: details.total}) }}
+				{{ n('messagevault', '{total} message', '{total} messages', details.total, {total: details.total}) }}
 			</div>
 
 			<div class="message-container" :class="{ 'icon-loading': loading }">
