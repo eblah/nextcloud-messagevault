@@ -26,6 +26,14 @@ use XMLReader;
 use OCA\MessageVault\Db\AddressMapper;
 
 class ImportXmlService {
+	private $stats = [
+		'messages' => 0,
+		'attachments' => 0,
+		'x_messages' => 0,
+		'x_attachments' => 0,
+		'start' => null,
+	];
+
 	private $app_name;
 	private $cache_address = [];
 	private $cache_thread = [];
@@ -98,6 +106,7 @@ class ImportXmlService {
 	}
 
 	public function runImport(User $user, int $file_id) {
+		$this->stats['start'] = microtime();
 		$this->user = $user;
 
 		$this->exclude_numbers = explode(',',
@@ -118,7 +127,7 @@ class ImportXmlService {
 		$reader = new XMLReader();
 		$reader->open($full_path, null, LIBXML_PARSEHUGE | LIBXML_HTML_NOIMPLIED | LIBXML_BIGLINES);
 
-		while ($reader->read()) {
+		while($reader->read()) {
 			if(!in_array($reader->name, ['mms', 'sms']) || $reader->nodeType !== XMLReader::ELEMENT) continue;
 
 			try {
@@ -132,6 +141,7 @@ class ImportXmlService {
 			if($reader->name == 'mms') $this->parseMms($message_data);
 		}
 		$this->logger->info('Completed import.');
+		$this->saveLog($full_path);
 	}
 
 	private function findOrCreateAddress(string $address, string $name = null): int {
@@ -220,6 +230,9 @@ class ImportXmlService {
 				'uniqueHash' => $hash
 			]));
 			$m_id = $entity->getId();
+			++$this->stats['messages'];
+		} else {
+			++$this->stats['x_messages'];
 		}
 
 		return (int)$m_id;
@@ -325,12 +338,24 @@ class ImportXmlService {
 			$attachment_id = $entity->getId();
 
 			/** @todo This needs to be moved to the attachment service */
+			++$this->stats['attachments'];
 			try {
 				$this->attachment_storage->writeFile($this->user, $thread_id, $attachment_id, $data);
 			} catch(AlreadyExistsException $e) {
 				// Should be ok since only our app should be writing to files here
 			}
+		} else {
+			++$this->stats['x_attachments'];
 		}
+	}
+
+	private function saveLog($import_file) {
+		$data = 'Import file: ' . $import_file . "\n" .
+			'Time taken: ' . (microtime() - $this->stats['start']) . "\n" .
+			'Messages: ' . $this->stats['messages'] . ' (' . $this->stats['x_messages'] . ' already in system)' . "\n" .
+			'Attachments: ' . $this->stats['attachments'] . ' (' . $this->stats['x_attachments'] . ' already in system)' . "\n";
+
+		$this->attachment_storage->writeFile($this->user, 'logs', time() . '.log', $data);
 	}
 
 	// @todo this really doesn't support anything outside of US numbers

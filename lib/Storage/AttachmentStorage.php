@@ -57,6 +57,17 @@ class AttachmentStorage {
 		return $folder;
 	}
 
+	public function getLogFolder(User $user): Node {
+		$app_folder = $this->getOrCreateAppFolder($user);
+		try {
+			$logs = $app_folder->get('logs');
+		} catch(NotFoundException $e) {
+			$app_folder->newFolder('logs');
+			$logs = $app_folder->get('logs');
+		}
+		return $logs;
+	}
+
 	/**
 	 * Gets dimensions if a video or image
 	 * @param $filename
@@ -70,16 +81,16 @@ class AttachmentStorage {
 		return [$size[0], $size[1]];
 	}
 
-	public function writeFile(User $user, $thread_id, $attachment_id, $data) {
+	public function writeFile(User $user, $folder_name, $new_fn, $data) {
 		$app_folder = $this->getOrCreateAppFolder($user);
 
 		try {
-			$app_folder->get($thread_id . '/');
+			$app_folder->get($folder_name . '/');
 		} catch (NotFoundException $e) {
-			$app_folder->newFolder($thread_id);
+			$app_folder->newFolder($folder_name);
 		}
 
-		$filename = $thread_id . '/' . $attachment_id;
+		$filename = $folder_name . '/' . $new_fn;
 		// check if file exists and write to it if possible
 		try {
 			if($app_folder->nodeExists($filename)) {
