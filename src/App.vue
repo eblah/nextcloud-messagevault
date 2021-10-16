@@ -63,7 +63,7 @@ export default {
 		return {
 			threadList: [],
 			loading: true,
-			activeThreadId: null,
+			activeThreadId: 2,
 		};
 	},
 	computed: {

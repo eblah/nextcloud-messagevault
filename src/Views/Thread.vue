@@ -1,12 +1,12 @@
 <template>
 	<div class="section">
 		<div v-if="details">
-			<h1>{{ details.name }}</h1>
-			<div v-if="loading">
-				Loading...
+			<h2>{{ details.name }}</h2>
+			<div class="stats">
+				{{ n('msgvault', '{total} message', '{total} messages', details.total, {total: details.total}) }}
 			</div>
 
-			<div class="message-container">
+			<div class="message-container" :class="{ 'icon-loading': loading }">
 				<MessageList :page="1" :key="details.id" :thread_id="details.id" :total="details.total"></MessageList>
 			</div>
 		</div>
@@ -34,15 +34,6 @@ export default {
 	},
 
 	async mounted() {
-		// this.threadStatus = {
-		// 	topPosition: 0,
-		// 	bottomPosition: 1,
-		// 	count: 100,
-		// 	firstLoad: true,
-		// 	loading: true,
-		// 	id: this.id,
-		// };
-
 		const response = await axios.get(generateUrl(`/apps/messagevault/thread/${this.id}`));
 		this.details = response.data;
 		this.loading = false;
@@ -60,5 +51,13 @@ export default {
 	bottom: 10px;
 	left: 25px;
 	right: 25px;
+}
+.section {
+	padding: 7px 30px 30px 45px
+}
+
+.stats {
+	margin-top: -15px;
+	font-size: 11px;
 }
 </style>

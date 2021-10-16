@@ -2,13 +2,14 @@
 	<div class="message-list">
 		<div :class="{ 'icon-loading': loading }">
 			<div v-if="messages.length">
-				<MessageItem v-for="message in messages"
-										:key="message.id"
-										:body="message.body"
-										:attachments="message.attachments"
-										:timestamp="message.timestamp"
-										:address-id="message.addressId"
-										:received="message.received" />
+				<div v-for="message in messages">
+					<MessageItem :key="message.id"
+											 :body="message.body"
+											 :attachments="message.attachments"
+											 :timestamp="message.timestamp"
+											 :address-id="message.addressId"
+											 :received="message.received" />
+				</div>
 			</div>
 			<div v-else-if="loading">
 				Loading...
@@ -53,6 +54,7 @@ export default {
 			messages: [],
 			loading: true,
 			firstLoad: true,
+			lastMessage: null
 		};
 	},
 
@@ -137,5 +139,7 @@ export default {
 .message-list {
 	overflow: scroll;
 	height: 100%;
+	max-width: 1000px;
+	margin: auto;
 }
 </style>

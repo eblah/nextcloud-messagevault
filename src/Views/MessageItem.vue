@@ -1,27 +1,39 @@
 <template>
-	<div class="message-item" :class="{'message-sent': received == 0}">
-		{{ formattedDate }}, {{ addressId }}<br />
-		{{ body }}
-		<div v-for="file in attachments" :key="file.id">
-			<img v-if="file.filetype.match('image')" :src="file.url" :height="file.height" :width="file.width" style="max-width: 400px; height: auto;">
-			<video v-else-if="file.filetype.match('video')" width="400" controls>
-				<source :src="file.url" :type="file.filetype">
-			</video>
+	<div class="message-item" :class="{'message-sent': received == 0, combined: combined}">
+		<div v-if="body !== null" class="message-text">
+			{{ body }}
+		</div>
+		<div class="attachment" v-else>
+			<Attachment v-for="file in attachments"
+									:key="file.id"
+									:filetype="file.filetype"
+									:url="file.url"
+									:width="file.width"
+									:height="file.height"
+			/>
+		</div>
+		<div class="message-address">
+			{{ formattedDate }} by {{ addressId }}
 		</div>
 	</div>
 </template>
 
 <script>
 import moment from '@nextcloud/moment';
+import Attachment from '../Components/Attachment'
 
 export default {
 	name: 'MessageItem',
+	components: {
+		Attachment
+	},
 	props: {
 		body: String|null,
 		received: Number,
 		timestamp: Number,
 		addressId: Number|null,
-		attachments: Array|null
+		attachments: Array|null,
+		combined: Boolean,
 	},
 	data() {
 		return {
@@ -36,15 +48,39 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+$message-recv-bg: #ddd;
+$message-sent-bg: #aec4d6;
+
 .message-item {
-	margin: 10px 25% 10px 0;
-	padding: 10px;
-	background: #ddd;
+	display: flow-root;
 }
 
-.message-item.message-sent {
-	margin: auto 0 auto 25%;
-	text-align: right;
+.message-text {
+	margin: 10px 25% 0px 0;
+	padding: 10px;
+	background-color: $message-recv-bg;
+	float: left;
+	border-radius: 10px;
+}
+
+.message-address {
+	font-size: 9px;
+	clear: both;
+	float: left;
+}
+
+.message-sent {
+	& .message-text {
+		background-color: $message-sent-bg;
+	}
+
+	& .message-address,
+	& .message-text,
+	& .attachment {
+		margin: auto 0 auto 25%;
+		text-align: right;
+		float: right;
+	}
 }
 </style>
