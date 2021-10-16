@@ -1,7 +1,9 @@
 <template>
 	<div id="content" class="app-messagevault">
 		<AppNavigation :class="{ 'icon-loading': loading }">
-			<template #list>
+			<SettingsImport />
+
+			<template #list v-if="threadList.length">
 					<AppNavigationItem v-for="thread in threadList"
 						:key="thread.id"
 						:title="thread.name"
@@ -15,18 +17,30 @@
 						</template>
 					</AppNavigationItem>
 			</template>
+			<template #list>
+				<AppNavigationCaption :title="t('messagevault', 'No messages have been imported.')" />
+			</template>
 			<template #footer>
 				<AppNavigationSettings>
 					<SettingsConfig />
-					<SettingsImport />
 				</AppNavigationSettings>
 			</template>
 		</AppNavigation>
 		<AppContent :class="{ 'icon-loading': loading }">
 			<Thread v-if="activeThreadId" :id="activeThreadId" :key="activeThreadId"></Thread>
-			<div v-else id="emptycontent">
-				<div class="icon-file" />
-				<h2>{{ t('messagevault', 'Select a message thread to view...') }}</h2>
+			<div v-else>
+				<div v-if="threadList.length || loading" id="emptycontent">
+					<div class="icon-file" />
+					<h2>{{ t('messagevault', 'Select a message thread to view...') }}</h2>
+				</div>
+				<div v-else class="section">
+					<h2>{{ t('messagevault', 'Getting Started ') }}</h2>
+					<p>{{ t('messagevault', 'To get started, first go to Settings and add any addresses that you have used to send \
+							messages. After that, import your first backup. The file will be imported on the next jobs run, usually about five minutes.') }}</p>
+					<p>{{ t('messagevault', 'It could take several hours to import all messages, depending on the size of the backup.') }}</p>
+					<p>{{ t('messagevault', 'You can use a workflow to automatically import backups into the system in the future. It is recommended to \
+						watch a specific folder and import. If a file is not recognized as XML it will not be imported.') }}</p>
+				</div>
 			</div>
 		</AppContent>
 	</div>
@@ -41,6 +55,7 @@ import AppNavigationSettings from '@nextcloud/vue/dist/Components/AppNavigationS
 import Thread from './Views/Thread';
 import SettingsConfig from './Settings/Config';
 import SettingsImport from './Settings/Import';
+import AppNavigationCaption from '@nextcloud/vue/dist/Components/AppNavigationCaption';
 import Address from './Components/Address';
 
 import '@nextcloud/dialogs/styles/toast.scss';
@@ -55,6 +70,7 @@ export default {
 		AppNavigation,
 		AppNavigationItem,
 		AppNavigationSettings,
+		AppNavigationCaption,
 		ActionButton,
 		Thread,
 		SettingsConfig,
@@ -65,7 +81,7 @@ export default {
 		return {
 			threadList: [],
 			loading: true,
-			activeThreadId: 2,
+			activeThreadId: null,
 		};
 	},
 	computed: {

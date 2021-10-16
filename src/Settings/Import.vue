@@ -1,10 +1,9 @@
 <template>
-	<div class="import-contact">
-		<button class="import-contact__button-main" @click="openPicker">
-			<span class="icon-upload" />
-			{{ t('contacts', 'Import a Backup') }}
-		</button>
-	</div>
+	<AppNavigationNew v-if="!loading"
+										:text="t('messagevault', 'Import a new backup file')"
+										:disabled="false"
+										button-class="icon-upload"
+										@click="openPicker" />
 </template>
 
 <script>
@@ -12,8 +11,9 @@ import { getFilePickerBuilder } from '@nextcloud/dialogs';
 import { showError, showSuccess } from '@nextcloud/dialogs';
 import axios from '@nextcloud/axios';
 import { generateUrl } from '@nextcloud/router';
+import AppNavigationNew from '@nextcloud/vue/dist/Components/AppNavigationNew';
 
-const picker = getFilePickerBuilder(t('messagevault', 'Choose an XML backup to import'))
+const picker = getFilePickerBuilder(t('messagevault', 'Choose a XML backup to import'))
 	.setMultiSelect(false)
 	.setModal(true)
 	.setType(1)
@@ -23,6 +23,9 @@ const picker = getFilePickerBuilder(t('messagevault', 'Choose an XML backup to i
 
 export default {
 	name: 'Import',
+	components: {
+		AppNavigationNew
+	},
 	methods: {
 		async processLocalFile(path) {
 			try {
