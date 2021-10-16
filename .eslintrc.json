@@ -4,6 +4,7 @@
         "es2021": true
     },
     "extends": [
+        "@nextcloud",
         "eslint:recommended",
         "plugin:vue/essential"
     ],
@@ -30,6 +31,12 @@
         "semi": [
             "error",
             "always"
+        ],
+        "vue/html-indent": [
+          "off"
+        ],
+        "no-extra-parens": [
+          "off"
         ]
     }
 }

@@ -1,14 +1,12 @@
 <template>
-	<AppNavigationNew v-if="!loading"
-										:text="t('messagevault', 'Import a new backup file')"
+	<AppNavigationNew :text="t('messagevault', 'Import a new backup file')"
 										:disabled="false"
 										button-class="icon-upload"
 										@click="openPicker" />
 </template>
 
 <script>
-import { getFilePickerBuilder } from '@nextcloud/dialogs';
-import { showError, showSuccess } from '@nextcloud/dialogs';
+import { getFilePickerBuilder, showError, showSuccess } from '@nextcloud/dialogs';
 import axios from '@nextcloud/axios';
 import { generateUrl } from '@nextcloud/router';
 import AppNavigationNew from '@nextcloud/vue/dist/Components/AppNavigationNew';
@@ -32,8 +30,8 @@ export default {
 				const response = await axios.post(generateUrl('/apps/messagevault/import/new'), {
 					filename: path
 				});
-				if(response.data) showSuccess(t('messagevault', 'This backup will be processed soon.'));
-					else throw false;
+				if (response.data) showSuccess(t('messagevault', 'This backup will be processed soon.'));
+				else throw new Error();
 			} catch (e) {
 				showError('There was an error adding this import.');
 			}
@@ -56,7 +54,3 @@ export default {
 	}
 };
 </script>
-
-<style scoped>
-
-</style>

@@ -7,7 +7,10 @@
 			</div>
 
 			<div class="message-container" :class="{ 'icon-loading': loading }">
-				<MessageList :page="1" :key="details.id" :thread_id="details.id" :total="details.total"></MessageList>
+				<MessageList :page="1"
+										 :key="details.id"
+										 :thread_id="details.id"
+										 :total="details.total"></MessageList>
 			</div>
 		</div>
 	</div>
@@ -52,6 +55,7 @@ export default {
 	left: 25px;
 	right: 25px;
 }
+
 .section {
 	padding: 7px 30px 30px 45px
 }

@@ -3,7 +3,8 @@
 		<AppNavigation :class="{ 'icon-loading': loading }">
 			<SettingsImport />
 
-			<template #list v-if="threadList.length">
+			<template #list>
+				<div v-if="threadList.length">
 					<AppNavigationItem v-for="thread in threadList"
 						:key="thread.id"
 						:title="thread.name"
@@ -16,9 +17,8 @@
 							</ActionButton>
 						</template>
 					</AppNavigationItem>
-			</template>
-			<template #list>
-				<AppNavigationCaption :title="t('messagevault', 'No messages have been imported.')" />
+				</div>
+				<AppNavigationCaption v-else :title="t('messagevault', 'No messages have been imported.')" />
 			</template>
 			<template #footer>
 				<AppNavigationSettings>
@@ -56,7 +56,6 @@ import Thread from './Views/Thread';
 import SettingsConfig from './Settings/Config';
 import SettingsImport from './Settings/Import';
 import AppNavigationCaption from '@nextcloud/vue/dist/Components/AppNavigationCaption';
-import Address from './Components/Address';
 
 import '@nextcloud/dialogs/styles/toast.scss';
 import { generateUrl } from '@nextcloud/router';
@@ -64,7 +63,7 @@ import { showError } from '@nextcloud/dialogs';
 import axios from '@nextcloud/axios';
 
 export default {
-	name: 'MessageVault',
+	name: 'App',
 	components: {
 		AppContent,
 		AppNavigation,
@@ -75,7 +74,6 @@ export default {
 		Thread,
 		SettingsConfig,
 		SettingsImport,
-		Address,
 	},
 	data() {
 		return {
@@ -105,7 +103,7 @@ export default {
 
 	methods: {
 		async deleteThreadConfirm(confirm) {
-			if(!confirm) return;
+			if (!confirm) return;
 
 			await axios.delete(generateUrl('/apps/messagevault/thread/' + this.activeThreadId));
 
@@ -118,11 +116,11 @@ export default {
 			this.activeThreadId = thread.id;
 
 			OC.dialogs.confirm(
-					t('messagevault', `This will delete the thread "${thread.name}". All messages and attachments associated with it will be removed. ` +
-							'Are you sure you want to do that?'),
-					t('messagevault', 'Delete thread?', { threadName: thread.name }),
-					this.deleteThreadConfirm,
-					true
+				t('messagevault', `This will delete the thread "${thread.name}". All messages and attachments associated with it will be removed. `
+						+ 'Are you sure you want to do that?'),
+				t('messagevault', 'Delete thread?', { threadName: thread.name }),
+				this.deleteThreadConfirm,
+				true
 			);
 		},
 	},

@@ -23,11 +23,10 @@ import { generateFilePath } from '@nextcloud/router';
 
 import Vue from 'vue';
 import App from './App';
+import Address from './Components/Address';
 
 // eslint-disable-next-line
 __webpack_public_path__ = generateFilePath(appName, '', 'js/');
-
-import Address from './Components/Address';
 
 Vue.mixin({ methods: { t, n } });
 Vue.use(Address);

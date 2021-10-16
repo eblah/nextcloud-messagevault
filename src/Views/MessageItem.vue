@@ -9,8 +9,7 @@
 									:filetype="file.filetype"
 									:url="file.url"
 									:width="file.width"
-									:height="file.height"
-			/>
+									:height="file.height" />
 		</div>
 		<div class="message-address">
 			<div v-if="received === 1">
@@ -25,7 +24,7 @@
 
 <script>
 import moment from '@nextcloud/moment';
-import Attachment from '../Components/Attachment'
+import Attachment from '../Components/Attachment';
 
 export default {
 	name: 'MessageItem',
@@ -33,11 +32,11 @@ export default {
 		Attachment
 	},
 	props: {
-		body: String|null,
+		body: [String, null],
 		received: Number,
 		timestamp: Number,
-		addressId: Number|null,
-		attachments: Array|null,
+		addressId: [Number, null],
+		attachments: [Array, null],
 		combined: Boolean,
 	},
 	data() {

@@ -5,7 +5,8 @@
 				 :height="height"
 				 :width="width">
 		<video v-else-if="filetype.match('video')"
-					 width="400" controls>
+					 width="400"
+					 controls>
 			<source :src="url"
 							:type="filetype">
 		</video>
@@ -14,12 +15,12 @@
 
 <script>
 export default {
-	name: 'MessageItem',
+	name: 'Attachment',
 	props: {
 		filetype: String,
 		url: String,
-		height: Number|null,
-		width: Number|null
+		height: [Number, null],
+		width: [Number, null]
 	},
 	data() {
 		return {

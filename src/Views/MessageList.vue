@@ -2,7 +2,7 @@
 	<div class="message-list">
 		<div :class="{ 'icon-loading': loading }">
 			<div v-if="messages.length">
-				<div v-for="message in messages">
+				<div v-for="message in messages" :key="message.id">
 					<MessageItem :key="message.id"
 											 :body="message.body"
 											 :attachments="message.attachments"
@@ -23,7 +23,7 @@
 
 <script>
 import axios from '@nextcloud/axios';
-import {generateUrl} from '@nextcloud/router';
+import { generateUrl } from '@nextcloud/router';
 
 import MessageItem from './MessageItem';
 
@@ -70,8 +70,8 @@ export default {
 
 	updated() {
 		this.$nextTick(() => {
-			if(this.firstLoad) {
-				if(this.pagination.bottom === 0) {
+			if (this.firstLoad) {
+				if (this.pagination.bottom === 0) {
 					this.$el.scrollTo(0, this.$el.scrollHeight);
 				}
 				this.firstLoad = false;
@@ -79,7 +79,7 @@ export default {
 				this.watchScroll();
 			}
 
-			if(this._currentScrollPosition) {
+			if (this._currentScrollPosition) {
 				this.$el.scrollTop = this.$el.scrollHeight - this._currentScrollPosition + this.$el.scrollTop;
 			}
 			this._currentScrollPosition = null;
@@ -88,16 +88,16 @@ export default {
 
 	methods: {
 		async loadMessages(direction = 'first') {
-			if(this.loading && direction !== 'first') return false;
+			if (this.loading && direction !== 'first') return false;
 
-			const load_pos = this.getLoadPosition(direction);
-			if(this.total <= load_pos * this.pageMaxPer) return false;
+			const loadPos = this.getLoadPosition(direction);
+			if (this.total <= loadPos * this.pageMaxPer) return false;
 
 			this.loading = true;
 
-			const response = await axios.get(generateUrl(`/apps/messagevault/thread/${this.thread_id}/messages?position=${load_pos}&limit=${this.pageMaxPer}`));
+			const response = await axios.get(generateUrl(`/apps/messagevault/thread/${this.thread_id}/messages?position=${loadPos}&limit=${this.pageMaxPer}`));
 
-			if(direction === 'top') {
+			if (direction === 'top') {
 				// Save current scroll position
 				this._currentScrollPosition = this.$el.scrollHeight;
 				response.data.forEach((msg) => {
@@ -115,15 +115,15 @@ export default {
 
 		watchScroll() {
 			this.$el.onscroll = (() => {
-				//let top = this.$refs.messageList.scrollTop;// this.$refs.messageList.offsetHeight;
-				if(this.$el.scrollTop < 150 && this.$el.scrollTop > 0) this.loadMessages('top');
+				// let top = this.$refs.messageList.scrollTop;// this.$refs.messageList.offsetHeight;
+				if (this.$el.scrollTop < 150 && this.$el.scrollTop > 0) this.loadMessages('top');
 				// @todo also find the bottom
-				//if(this.$refs.messageList.scrollTop < 50 && this.$refs.messageList.scrollTop > 0) console.log('load moar');
+				// if(this.$refs.messageList.scrollTop < 50 && this.$refs.messageList.scrollTop > 0) console.log('load moar');
 			});
 		},
 
 		getLoadPosition(position) {
-			if(position === 'top') {
+			if (position === 'top') {
 				this.pagination.top += 1;
 				return this.pagination.top;
 			} else {

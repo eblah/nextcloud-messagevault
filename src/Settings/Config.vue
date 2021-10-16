@@ -11,16 +11,20 @@
 			<AppSettingsSection title="Import Settings">
 				<div>
 					<label for="myAddress">{{ t('messagevault', 'Your addresses') }}</label>
-					<input type="text" id="myAddress" class="app-settings"
-							v-model="config.myAddress"><br>
+					<input type="text"
+								 id="myAddress"
+								 class="app-settings"
+								 v-model="config.myAddress"><br>
 					<em>{{ t('messagevault', 'Backups do not always have your mobile number as the outgoing address. \
 						Enter your phone number here to ensure they are excluded. Separate additional numbers by a comma.\
 						Since addresses can be numbers or email addresses, nearly anything can be accepted here.') }}</em>
 				</div>
 				<div>
 					<label for="backupDir">{{ t('messagevault', 'Backup folder') }}</label>
-					<input type="text" id="backupDir" class="app-settings"
-							v-model="config.backupDir"> <button @click="chooseFolder">Choose</button><br>
+					<input type="text"
+								 id="backupDir"
+								 class="app-settings"
+								 v-model="config.backupDir"> <button @click="chooseFolder">Choose</button><br>
 					<em>{{ t('messagevault', 'Path to where your XML backups are being uploaded from your mobile device.') }}</em>
 				</div>
 				<br>
