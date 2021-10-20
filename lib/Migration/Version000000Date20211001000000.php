@@ -145,7 +145,7 @@ class Version000000Date20211001000000 extends SimpleMigrationStep {
 		]);
 
 		$table->addColumn('name', \OCP\DB\Types::STRING, [
-			'notnull' => true,
+			'notnull' => false,
 			'length' => 200
 		]);
 

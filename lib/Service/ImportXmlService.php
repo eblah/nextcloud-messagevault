@@ -188,7 +188,7 @@ class ImportXmlService {
 
 	private function getThread(array $addresses, string $thread_name = null): int {
 		$address_ids = [];
-		if($thread_name === '(Unknown)') $thread_name = null;
+		if($thread_name === '(Unknown)' || $thread_name === 'null') $thread_name = null;
 
 		$parsed_addresses = [];
 		foreach($addresses as $address) {
@@ -211,6 +211,11 @@ class ImportXmlService {
 		// If the thread name was null for some reason, let's add the users phone number as the thread name
 		if(empty($thread_name)) {
 			$thread_name = implode(', ', array_keys($address_ids));
+		}
+
+		// If this is true, we don't have everyones name on the thread title and need the front-end to take care of it
+		if(count($address_ids) > 1 && count(explode(', ', $thread_name)) !== count($address_ids)) {
+			$thread_name = null;
 		}
 
 		return $this->findOrCreateNewThread($thread_name, $address_ids);
@@ -274,8 +279,7 @@ class ImportXmlService {
 				$addresses[] = (string)$address['address'];
 			}
 			if(!count($addresses)) {
-				var_dump($message_data['readable_date']);
-				die;
+				throw new Exception('No addresses for the thread.');
 			}
 			$thread_id = $this->getThread(
 				$addresses,

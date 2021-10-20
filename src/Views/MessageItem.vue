@@ -50,7 +50,8 @@ export default {
 		},
 
 		addressName() {
-			return this.getAddressById(this.addressId).name;
+			const add = this.getAddressById(this.addressId);
+			return add.name ?? add.address;
 		}
 	}
 };

@@ -93,6 +93,22 @@ export default {
 			await this.loadAddresses();
 
 			const response = await axios.get(generateUrl('/apps/messagevault/thread'));
+			response.data.map(x => {
+				if(x.name === null) {
+					x.name = x.a.map(id => {
+						const add = this.getAddressById(id);
+						return add.name ?? add.address;
+					}).join(', ');
+				}
+				return x;
+			});
+			response.data.sort((a, b) => {
+				const na = a.name.toUpperCase();
+				const nb = b.name.toUpperCase();
+				if (na < nb) return -1;
+				if (na > nb) return 1;
+				return 0;
+			});
 			this.threadList = response.data;
 		} catch (e) {
 			console.error(e);
