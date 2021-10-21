@@ -158,7 +158,7 @@ class ImportXmlService {
 		return $this->cache_address[$address];
 	}
 
-	private function findOrCreateNewThread(string $thread_name, array $address_ids): int {
+	private function findOrCreateNewThread(?string $thread_name, array $address_ids): int {
 		$hash = Thread::buildHash($address_ids, $this->user);
 
 		if(!array_key_exists($hash, $this->cache_thread)) {

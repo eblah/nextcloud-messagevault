@@ -27,7 +27,7 @@
 			</template>
 		</AppNavigation>
 		<AppContent :class="{ 'icon-loading': loading }">
-			<Thread v-if="activeThreadId" :id="activeThreadId" :key="activeThreadId"></Thread>
+			<Thread v-if="activeThreadId" :id="activeThreadId" :key="activeThreadId" />
 			<div v-else>
 				<div v-if="threadList.length || loading" id="emptycontent">
 					<div class="icon-file" />
@@ -35,11 +35,17 @@
 				</div>
 				<div v-else class="section">
 					<h2>{{ t('messagevault', 'Getting Started ') }}</h2>
-					<p>{{ t('messagevault', 'To get started, first go to Settings and add any addresses that you have used to send \
-							messages. After that, import your first backup. The file will be imported on the next jobs run, usually about five minutes.') }}</p>
-					<p>{{ t('messagevault', 'It could take several hours to import all messages, depending on the size of the backup.') }}</p>
-					<p>{{ t('messagevault', 'You can use a workflow to automatically import backups into the system in the future. It is recommended to \
-						watch a specific folder and import. If a file is not recognized as XML it will not be imported.') }}</p>
+					<p>
+						{{ t('messagevault', 'To get started, first go to Settings and add any addresses that you have used to send \
+							messages. After that, import your first backup. The file will be imported on the next jobs run, usually about five minutes.') }}
+					</p>
+					<p>
+						{{ t('messagevault', 'It could take several hours to import all messages, depending on the size of the backup.') }}
+					</p>
+					<p>
+						{{ t('messagevault', 'You can use a workflow to automatically import backups into the system in the future. It is recommended to \
+						watch a specific folder and import. If a file is not recognized as XML it will not be imported.') }}
+					</p>
 				</div>
 			</div>
 		</AppContent>
@@ -93,23 +99,7 @@ export default {
 			await this.loadAddresses();
 
 			const response = await axios.get(generateUrl('/apps/messagevault/thread'));
-			response.data.map(x => {
-				if(x.name === null) {
-					x.name = x.a.map(id => {
-						const add = this.getAddressById(id);
-						return add.name ?? add.address;
-					}).join(', ');
-				}
-				return x;
-			});
-			response.data.sort((a, b) => {
-				const na = a.name.toUpperCase();
-				const nb = b.name.toUpperCase();
-				if (na < nb) return -1;
-				if (na > nb) return 1;
-				return 0;
-			});
-			this.threadList = response.data;
+			this.threadList = this.compileAddress(response.data);
 		} catch (e) {
 			console.error(e);
 			showError(t(this.name, 'Could not load threads.'));
@@ -118,6 +108,25 @@ export default {
 	},
 
 	methods: {
+		compileAddress(response) {
+			response.map(x => {
+				if (x.name === null) {
+					x.name = this.getThreadAddresses(x.a)
+						.join(', ');
+				}
+				return x;
+			});
+			response.sort((a, b) => {
+				const na = a.name.toUpperCase();
+				const nb = b.name.toUpperCase();
+				if (na < nb) return -1;
+				if (na > nb) return 1;
+				return 0;
+			});
+
+			return response;
+		},
+
 		async deleteThreadConfirm(confirm) {
 			if (!confirm) return;
 
@@ -136,7 +145,7 @@ export default {
 						+ 'Are you sure you want to do that?'),
 				t('messagevault', 'Delete thread?', { threadName: thread.name }),
 				this.deleteThreadConfirm,
-				true
+				true,
 			);
 		},
 	},

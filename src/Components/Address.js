@@ -14,6 +14,13 @@ Address.install = async function(Vue, options) {
 	Vue.prototype.getAddressById = function(addressId) {
 		return Address._addresses.find(x => x.id === addressId);
 	};
+
+	Vue.prototype.getThreadAddresses = function(addressIds) {
+		return addressIds.map(id => {
+			const add = this.getAddressById(id);
+			return add.name ?? add.address;
+		});
+	};
 };
 
 export default Address;

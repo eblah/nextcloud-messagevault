@@ -29,7 +29,7 @@ import Attachment from '../Components/Attachment';
 export default {
 	name: 'MessageItem',
 	components: {
-		Attachment
+		Attachment,
 	},
 	props: {
 		body: [String, null],
@@ -52,8 +52,8 @@ export default {
 		addressName() {
 			const add = this.getAddressById(this.addressId);
 			return add.name ?? add.address;
-		}
-	}
+		},
+	},
 };
 </script>
 

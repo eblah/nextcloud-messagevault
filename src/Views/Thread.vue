@@ -1,16 +1,16 @@
 <template>
 	<div class="section">
 		<div v-if="details">
-			<h2>{{ details.name }}</h2>
+			<h2>{{ title }}</h2>
 			<div class="stats">
 				{{ n('messagevault', '{total} message', '{total} messages', details.total, {total: details.total}) }}
 			</div>
 
 			<div class="message-container" :class="{ 'icon-loading': loading }">
-				<MessageList :page="1"
-										 :key="details.id"
-										 :thread_id="details.id"
-										 :total="details.total"></MessageList>
+				<MessageList :key="details.id"
+										 :page="1"
+										 :thread-id="details.id"
+										 :total="details.total" />
 			</div>
 		</div>
 	</div>
@@ -23,9 +23,11 @@ import axios from '@nextcloud/axios';
 import MessageList from './MessageList';
 
 export default {
-	props: ['id'],
 	components: {
-		MessageList
+		MessageList,
+	},
+	props: {
+		id: Number,
 	},
 	data() {
 		return {
@@ -34,6 +36,10 @@ export default {
 		};
 	},
 	computed: {
+		title() {
+			return this.getThreadAddresses(this.details.addressIds)
+				.join(', ');
+		},
 	},
 
 	async mounted() {

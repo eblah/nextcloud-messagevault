@@ -20,7 +20,7 @@ export default {
 		filetype: String,
 		url: String,
 		height: [Number, null],
-		width: [Number, null]
+		width: [Number, null],
 	},
 	data() {
 		return {
@@ -28,7 +28,7 @@ export default {
 		};
 	},
 	computed: {
-	}
+	},
 };
 </script>
 

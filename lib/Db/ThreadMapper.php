@@ -44,7 +44,11 @@ class ThreadMapper extends QBMapper {
 	public function findAll(User $user): array {
 		$qb = $this->db->getQueryBuilder();
 
-		$select = $qb->select('t.id', 't.name')->selectAlias($qb->createFunction('GROUP_CONCAT(ta.address_id)'), 'a')
+		$select = $qb->select('t.id', 't.name')
+			->selectAlias(
+				$qb->createFunction('GROUP_CONCAT(ta.address_id)')
+				, 'a'
+			)
 			->from($this->getTableName(), 't')
 			->join('t', ThreadAddressMapper::TABLE_NAME, 'ta', 't.id = ta.thread_id')
 			->where($qb->expr()->eq('t.user_id', $qb->createNamedParameter($user->getUID())))
@@ -58,6 +62,7 @@ class ThreadMapper extends QBMapper {
 			foreach(explode(',', $row['a']) as $a) $addrs[] = (int)$a;
 
 			$row['a'] = $addrs;
+			$row['id'] = (int)$row['id'];
 			$threads[] = $row;
 		}
 		$result->closeCursor();

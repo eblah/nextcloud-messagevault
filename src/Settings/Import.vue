@@ -22,13 +22,13 @@ const picker = getFilePickerBuilder(t('messagevault', 'Choose a XML backup to im
 export default {
 	name: 'Import',
 	components: {
-		AppNavigationNew
+		AppNavigationNew,
 	},
 	methods: {
 		async processLocalFile(path) {
 			try {
 				const response = await axios.post(generateUrl('/apps/messagevault/import/new'), {
-					filename: path
+					filename: path,
 				});
 				if (response.data) showSuccess(t('messagevault', 'This backup will be processed soon.'));
 				else throw new Error();
@@ -51,6 +51,6 @@ export default {
 				this.loading = false;
 			}
 		},
-	}
+	},
 };
 </script>

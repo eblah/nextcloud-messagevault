@@ -42,6 +42,7 @@ class ThreadService {
 		return [
 			'id' => $details[0]->getId(),
 			'name' => $details[0]->getName(),
+			'addressIds' => $this->thread_address_mapper->findAllAddresses($id),
 			'total' => $this->message_mapper->getMessageCount($id)
 		];
 	}

@@ -30,19 +30,19 @@ import MessageItem from './MessageItem';
 export default {
 	name: 'MessageList',
 	components: {
-		MessageItem
+		MessageItem,
 	},
 	props: {
-		thread_id: Number,
+		threadId: Number,
 		page: {
 			default: 1,
-			type: Number
+			type: Number,
 		},
 		pageMaxPer: {
 			default: 100,
-			type: Number
+			type: Number,
 		},
-		total: Number
+		total: Number,
 	},
 	data() {
 		return {
@@ -54,7 +54,7 @@ export default {
 			messages: [],
 			loading: true,
 			firstLoad: true,
-			lastMessage: null
+			lastMessage: null,
 		};
 	},
 
@@ -95,7 +95,7 @@ export default {
 
 			this.loading = true;
 
-			const response = await axios.get(generateUrl(`/apps/messagevault/thread/${this.thread_id}/messages?position=${loadPos}&limit=${this.pageMaxPer}`));
+			const response = await axios.get(generateUrl(`/apps/messagevault/thread/${this.threadId}/messages?position=${loadPos}&limit=${this.pageMaxPer}`));
 
 			if (direction === 'top') {
 				// Save current scroll position
@@ -109,8 +109,17 @@ export default {
 			}
 
 			// @todo cleanup messages outside of the viewport?
+			this.cleanup(direction);
 
 			this.loading = false;
+		},
+
+		cleanup(dir) {
+			if(this.messages.length > 200 && dir === 'top') {
+//				this.messages.splice(200, this.messages.length - 200);
+			}
+
+
 		},
 
 		watchScroll() {
@@ -131,7 +140,7 @@ export default {
 				return this.pagination.bottom;
 			}
 		},
-	}
+	},
 };
 </script>
 
