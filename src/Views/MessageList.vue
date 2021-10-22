@@ -115,11 +115,9 @@ export default {
 		},
 
 		cleanup(dir) {
-			if(this.messages.length > 200 && dir === 'top') {
-//				this.messages.splice(200, this.messages.length - 200);
+			if (this.messages.length > 200 && dir === 'top') {
+				// this.messages.splice(200, this.messages.length - 200);
 			}
-
-
 		},
 
 		watchScroll() {

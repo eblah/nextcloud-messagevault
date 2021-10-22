@@ -3,7 +3,7 @@
 		<div v-if="body !== null" class="message-text">
 			{{ body }}
 		</div>
-		<div class="attachment" v-else>
+		<div v-else class="attachment">
 			<Attachment v-for="file in attachments"
 									:key="file.id"
 									:filetype="file.filetype"
