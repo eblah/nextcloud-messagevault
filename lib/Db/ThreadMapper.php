@@ -27,8 +27,11 @@ declare(strict_types=1);
 namespace OCA\MessageVault\Db;
 
 use OC\User\User;
+use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\Entity;
+use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 use OCP\AppFramework\Db\QBMapper;
+use OCP\DB\Exception;
 use OCP\IDBConnection;
 
 class ThreadMapper extends QBMapper {
@@ -68,6 +71,27 @@ class ThreadMapper extends QBMapper {
 		$result->closeCursor();
 
 		return $threads;
+	}
+
+	public function findHash(string $hash_idx, User $user): ?int {
+		$qb = $this->db->getQueryBuilder();
+
+		$select = $qb->select('id')
+			->from($this->getTableName())
+			->where(
+				$qb->expr()->eq('user_id', $qb->createNamedParameter($user->getUID()))
+			)->andWhere(
+				$qb->expr()->eq('unique_hash', $qb->createNamedParameter($hash_idx))
+			);
+
+		try {
+			return $this->findEntity($select)
+				->getId();
+		} catch (DoesNotExistException $e) { // can't be multiple exception due to being unique
+			return null;
+		} catch (Exception $e) {
+			return null;
+		}
 	}
 
 	public function findAllHashes(User $user): array {

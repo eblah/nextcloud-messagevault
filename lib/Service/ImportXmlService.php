@@ -3,7 +3,6 @@
 namespace OCA\MessageVault\Service;
 
 use Exception;
-use OC\Files\Node\File;
 use OC\User\User;
 use OCA\MessageVault\Db\Address;
 use OCA\MessageVault\Db\Attachment;
@@ -17,6 +16,7 @@ use OCA\MessageVault\Db\ThreadMapper;
 use OCA\MessageVault\Storage\AttachmentStorage;
 use OCP\Files\AlreadyExistsException;
 use OCP\Files\IRootFolder;
+use OCP\Files\Node;
 use OCP\Files\NotFoundException;
 use OCP\IConfig;
 use Psr\Log\LoggerInterface;
@@ -58,6 +58,10 @@ class ImportXmlService {
 								AttachmentMapper $attachment_mapper, AttachmentStorage $attachment_storage,
 								IConfig $config, IRootFolder $storage, LoggerInterface $logger,
 								$appName) {
+		// A little history: I wrote the base of this processor several years before the actual app was built
+		// So, this entire import service is doing way too much and is super bloated
+		// Eventually, this needs to be split and then this specific import needs to be a "plugin" type so we can
+		// support importing other backup files and software
 		$this->app_name = $appName;
 		$this->address_mapper = $address_mapper;
 		$this->message_mapper = $message_mapper;
@@ -82,7 +86,7 @@ class ImportXmlService {
 		}
 	}
 
-	public function getNodeFromFilename(User $user, string $file): ?File {
+	public function getNodeFromFilename(User $user, string $file): ?Node {
 		$user_folder = $this->storage->getUserFolder($user->getUID());
 
 		try {
@@ -106,7 +110,7 @@ class ImportXmlService {
 	}
 
 	public function runImport(User $user, int $file_id) {
-		$this->stats['start'] = microtime();
+		$this->stats['start'] = microtime(true);
 		$this->user = $user;
 
 		$this->exclude_numbers = explode(',',
@@ -162,21 +166,28 @@ class ImportXmlService {
 		$hash = Thread::buildHash($address_ids, $this->user);
 
 		if(!array_key_exists($hash, $this->cache_thread)) {
-			$id = $this->thread_mapper->insert((new Thread())->fromParams([
-				'userId' => $this->user->getUID(),
-				'name' => $thread_name,
-				'uniqueHash' => $hash
-			]))->getId();
+			// Due to a chance, especially on first import, of multiple XML backups being run at the same
+			// time, we should FIRST check the database again to make sure a thread hasn't already been created.
+			// Otherwise, we could get a unique failure here
+			$id = $this->thread_mapper->findHash($hash, $this->user);
+
+			if($id === null) {
+				$id = $this->thread_mapper->insert((new Thread())->fromParams([
+					'userId' => $this->user->getUID(),
+					'name' => $thread_name,
+					'uniqueHash' => $hash
+				]))->getId();
+
+				foreach ($address_ids as $a_id) {
+					// These are mainly only saved for documentation purposes to see who was on the thread
+					$this->thread_address_mapper->insert((new ThreadAddress())->fromParams([
+						'threadId' => $id,
+						'addressId' => $a_id
+					]));
+				}
+			}
 
 			$this->cache_thread[$hash] = $id;
-
-			foreach($address_ids as $a_id) {
-				// These are mainly only saved for documentation purposes to see who was on the thread
-				$this->thread_address_mapper->insert((new ThreadAddress())->fromParams([
-					'threadId' => $id,
-					'addressId' => $a_id
-				]));
-			}
 		}
 
 		return $this->cache_thread[$hash];
@@ -213,7 +224,7 @@ class ImportXmlService {
 			$thread_name = implode(', ', array_keys($address_ids));
 		}
 
-		// If this is true, we don't have everyones name on the thread title and need the front-end to take care of it
+		// If this is true, we don't have everyone's name on the thread title and need the front-end to take care of it
 		if(count($address_ids) > 1 && count(explode(', ', $thread_name)) !== count($address_ids)) {
 			$thread_name = null;
 		}
@@ -346,7 +357,9 @@ class ImportXmlService {
 			try {
 				$this->attachment_storage->writeFile($this->user, $thread_id, $attachment_id, $data);
 			} catch(AlreadyExistsException $e) {
-				// Should be ok since only our app should be writing to files here
+				// Should be ok since only our app should be writing to file's here
+				++$this->stats['x_attachments'];
+				return;
 			}
 		} else {
 			++$this->stats['x_attachments'];
@@ -355,9 +368,9 @@ class ImportXmlService {
 
 	private function saveLog($import_file) {
 		$data = 'Import file: ' . $import_file . "\n" .
-			'Time taken: ' . (microtime() - $this->stats['start']) . "\n" .
-			'Messages: ' . $this->stats['messages'] . ' (' . $this->stats['x_messages'] . ' already in system)' . "\n" .
-			'Attachments: ' . $this->stats['attachments'] . ' (' . $this->stats['x_attachments'] . ' already in system)' . "\n";
+			'Time taken: ' . round(microtime(true) - $this->stats['start'], 5) . "\n" .
+			'Messages: ' . $this->stats['messages'] . ' (' . $this->stats['x_messages'] . ' already in system or skipped)' . "\n" .
+			'Attachments: ' . $this->stats['attachments'] . ' (' . $this->stats['x_attachments'] . ' already in system or skipped)' . "\n";
 
 		$this->attachment_storage->writeFile($this->user, 'logs', time() . '.log', $data);
 	}

@@ -42,7 +42,7 @@ class Version000000Date20211001000000 extends SimpleMigrationStep {
 		return $schema;
 	}
 
-	private function createSmsFile($schema) {
+	private function createSmsFile(ISchemaWrapper $schema): void {
 		$table = $schema->createTable('msgvault_attachment');
 
 		$table->addColumn('id', \OCP\DB\Types::INTEGER, [
@@ -86,7 +86,7 @@ class Version000000Date20211001000000 extends SimpleMigrationStep {
 		$table->addIndex(['unique_hash'], 'msgvault_file_hash_index');
 	}
 
-	private function createSmsMessage($schema) {
+	private function createSmsMessage(ISchemaWrapper $schema): void {
 		$table = $schema->createTable('msgvault_message');
 
 		$table->addColumn('id', \OCP\DB\Types::INTEGER, [
@@ -128,10 +128,10 @@ class Version000000Date20211001000000 extends SimpleMigrationStep {
 		$table->addIndex(['id'], 'msgvault_message_mid_index');
 		$table->addIndex(['thread_id'], 'msgvault_message_tid_index');
 		$table->addIndex(['address_id'], 'msgvault_message_aid_index');
-		$table->addIndex(['unique_hash'], 'msgvault_message_hash_idx');
+		$table->addUniqueIndex(['unique_hash'], 'msgvault_message_hash_idx');
 	}
 
-	private function createSmsThread($schema) {
+	private function createSmsThread(ISchemaWrapper $schema): void {
 		$table = $schema->createTable('msgvault_thread');
 		$table->addColumn('id', \OCP\DB\Types::INTEGER, [
 			'autoincrement' => true,
@@ -156,10 +156,10 @@ class Version000000Date20211001000000 extends SimpleMigrationStep {
 
 		$table->setPrimaryKey(['id', 'user_id']);
 		$table->addIndex(['id'], 'msgvault_thread_tid_index');
-		$table->addIndex(['unique_hash'], 'msgvault_thread_hash_idx');
+		$table->addUniqueIndex(['unique_hash'], 'msgvault_thread_hash_idx');
 	}
 
-	private function createSmsThreadAddress($schema) {
+	private function createSmsThreadAddress(ISchemaWrapper $schema): void {
 		$table = $schema->createTable('msgvault_thread_address');
 		$table->addColumn('thread_id', \OCP\DB\Types::INTEGER, [
 			'notnull' => true,
@@ -176,7 +176,7 @@ class Version000000Date20211001000000 extends SimpleMigrationStep {
 		$table->addIndex(['address_id'], 'msgvault_ta_aid_index');
 	}
 
-	private function createSmsAddress($schema) {
+	private function createSmsAddress(ISchemaWrapper $schema): void {
 		$table = $schema->createTable('msgvault_address');
 
 		$table->addColumn('id', \OCP\DB\Types::INTEGER, [
