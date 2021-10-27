@@ -353,9 +353,9 @@ class ImportXmlService {
 			$attachment_id = $entity->getId();
 
 			/** @todo This needs to be moved to the attachment service */
-			++$this->stats['attachments'];
 			try {
 				$this->attachment_storage->writeFile($this->user, $thread_id, $attachment_id, $data);
+				++$this->stats['attachments'];
 			} catch(AlreadyExistsException $e) {
 				// Should be ok since only our app should be writing to file's here
 				++$this->stats['x_attachments'];
@@ -372,7 +372,7 @@ class ImportXmlService {
 			'Messages: ' . $this->stats['messages'] . ' (' . $this->stats['x_messages'] . ' already in system or skipped)' . "\n" .
 			'Attachments: ' . $this->stats['attachments'] . ' (' . $this->stats['x_attachments'] . ' already in system or skipped)' . "\n";
 
-		$this->attachment_storage->writeFile($this->user, 'logs', time() . '.log', $data);
+		$this->attachment_storage->writeFile($this->user, '_logs', date('m-d-Y His') . '.txt', $data);
 	}
 
 	// @todo this really doesn't support anything outside of US numbers
