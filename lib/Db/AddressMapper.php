@@ -27,7 +27,9 @@ declare(strict_types=1);
 namespace OCA\MessageVault\Db;
 
 use OC\User\User;
+use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\QBMapper;
+use OCP\DB\Exception;
 use OCP\IDBConnection;
 
 class AddressMapper extends QBMapper {
@@ -50,8 +52,29 @@ class AddressMapper extends QBMapper {
 		return $this->findEntities($select);
 	}
 
+	public function findAddress(string $address, User $user): ?int {
+		$qb = $this->db->getQueryBuilder();
+
+		$select = $qb->select('id')
+			->from($this->getTableName())
+			->where(
+				$qb->expr()->eq('user_id', $qb->createNamedParameter($user->getUID()))
+			)->andWhere(
+				$qb->expr()->eq('address', $qb->createNamedParameter($address))
+			);
+
+		try {
+			return $this->findEntity($select)
+				->getId();
+		} catch (DoesNotExistException $e) { // can't be multiple exception due to being unique
+			return null;
+		} catch (Exception $e) {
+			return null;
+		}
+	}
+
 	/**
-	 * @return Address
+	 * @return Address[]
 	 */
 	public function find($id, User $user): array {
 		$qb = $this->db->getQueryBuilder();

@@ -26,7 +26,7 @@ use XMLReader;
 use OCA\MessageVault\Db\AddressMapper;
 
 class ImportXmlService {
-	private $stats = [
+	private array $stats = [
 		'messages' => 0,
 		'attachments' => 0,
 		'x_messages' => 0,
@@ -34,24 +34,21 @@ class ImportXmlService {
 		'start' => null,
 	];
 
-	private $app_name;
-	private $cache_address = [];
-	private $cache_thread = [];
-	private $exclude_numbers = [];
+	private string $app_name;
+	private array $cache_address = [];
+	private array $cache_thread = [];
+	private array $exclude_numbers = [];
 
-	private $address_mapper;
-	private $attachment_mapper;
-	private $message_mapper;
-	private $thread_mapper;
-	private $thread_address_mapper;
-	private $attachment_storage;
-	private $config;
-	private $storage;
-	/** @var LoggerInterface */
-	private $logger;
-
-	/** @var User */
-	private $user;
+	private AddressMapper $address_mapper;
+	private AttachmentMapper $attachment_mapper;
+	private MessageMapper $message_mapper;
+	private ThreadMapper $thread_mapper;
+	private ThreadAddressMapper $thread_address_mapper;
+	private AttachmentStorage $attachment_storage;
+	private IConfig $config;
+	private IRootFolder $storage;
+	private LoggerInterface $logger;
+	private User $user;
 
 	public function __construct(AddressMapper $address_mapper, MessageMapper $message_mapper,
 								ThreadMapper $thread_mapper, ThreadAddressMapper $thread_address_mapper,
@@ -150,11 +147,16 @@ class ImportXmlService {
 
 	private function findOrCreateAddress(string $address, string $name = null): int {
 		if(!array_key_exists($address, $this->cache_address)) {
-			$id = $this->address_mapper->insert((new Address())->fromParams([
-				'address' => $address,
-				'userId' => $this->user->getUID(),
-				'name' => $name
-			]))->getId();
+			// See note on thread creation
+			$id = $this->address_mapper->findAddress($address, $this->user);
+
+			if($id === null) {
+				$id = $this->address_mapper->insert((new Address())->fromParams([
+					'address' => $address,
+					'userId' => $this->user->getUID(),
+					'name' => $name
+				]))->getId();
+			}
 
 			$this->cache_address[$address] = $id;
 		}
