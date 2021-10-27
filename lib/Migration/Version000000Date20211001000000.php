@@ -81,9 +81,9 @@ class Version000000Date20211001000000 extends SimpleMigrationStep {
 			'length' => 32,
 		]);
 
-		$table->setPrimaryKey(['id']);
-		$table->addIndex(['message_id'], 'msgvault_file_mid_index');
-		$table->addIndex(['unique_hash'], 'msgvault_file_hash_index');
+		$table->setPrimaryKey(['id'], 'mv_f_primary');
+		$table->addIndex(['message_id'], 'mv_file_mid_index');
+		$table->addIndex(['unique_hash'], 'mv_file_hash_index');
 	}
 
 	private function createSmsMessage(ISchemaWrapper $schema): void {
@@ -124,11 +124,11 @@ class Version000000Date20211001000000 extends SimpleMigrationStep {
 			'length' => 32
 		]);
 
-		$table->setPrimaryKey(['id', 'thread_id']);
-		$table->addIndex(['id'], 'msgvault_message_mid_index');
-		$table->addIndex(['thread_id'], 'msgvault_message_tid_index');
-		$table->addIndex(['address_id'], 'msgvault_message_aid_index');
-		$table->addUniqueIndex(['unique_hash'], 'msgvault_message_hash_idx');
+		$table->setPrimaryKey(['id', 'thread_id'], 'mv_m_primary');
+		$table->addIndex(['id'], 'mv_message_mid_index');
+		$table->addIndex(['thread_id'], 'mv_message_tid_index');
+		$table->addIndex(['address_id'], 'mv_message_aid_index');
+		$table->addUniqueIndex(['unique_hash'], 'mv_message_hash_idx');
 	}
 
 	private function createSmsThread(ISchemaWrapper $schema): void {
@@ -154,9 +154,9 @@ class Version000000Date20211001000000 extends SimpleMigrationStep {
 			'length' => 32
 		]);
 
-		$table->setPrimaryKey(['id', 'user_id']);
-		$table->addIndex(['id'], 'msgvault_thread_tid_index');
-		$table->addUniqueIndex(['unique_hash'], 'msgvault_thread_hash_idx');
+		$table->setPrimaryKey(['id', 'user_id'], 'mv_t_primary');
+		$table->addIndex(['id'], 'mv_thread_tid_index');
+		$table->addUniqueIndex(['unique_hash'], 'mv_thread_hash_idx');
 	}
 
 	private function createSmsThreadAddress(ISchemaWrapper $schema): void {
@@ -171,9 +171,9 @@ class Version000000Date20211001000000 extends SimpleMigrationStep {
 			'unsigned' => true,
 		]);
 
-		$table->setPrimaryKey(['thread_id', 'address_id']);
-		$table->addIndex(['thread_id'], 'msgvault_ta_tid_index');
-		$table->addIndex(['address_id'], 'msgvault_ta_aid_index');
+		$table->setPrimaryKey(['thread_id', 'address_id'], 'mv_ta_primary');
+		$table->addIndex(['thread_id'], 'mv_ta_tid_index');
+		$table->addIndex(['address_id'], 'mv_ta_aid_index');
 	}
 
 	private function createSmsAddress(ISchemaWrapper $schema): void {
@@ -200,8 +200,8 @@ class Version000000Date20211001000000 extends SimpleMigrationStep {
 			'length' => 200,
 		]);
 
-		$table->setPrimaryKey(['id', 'user_id']);
-		$table->addIndex(['address'], 'msgvault_address_value_index');
-		$table->addIndex(['id'], 'msgvault_address_aid_index');
+		$table->setPrimaryKey(['id', 'user_id'], 'mv_addr_primary');
+		$table->addIndex(['address'], 'mv_addr_value_index');
+		$table->addIndex(['id'], 'mv_addr_aid_index');
 	}
 }
