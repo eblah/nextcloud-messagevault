@@ -30,6 +30,7 @@ Features that should be added in the future include, and are in no particular or
 - Export to HTML?
 - Import of other formats and mediums (ie, Signal)
 - Potential front end "live" sync from mobile devices?
+- Folders for better organization
 
 # Maintainers
 - [Justin Osborne](https://github.com/onfire4g05)
