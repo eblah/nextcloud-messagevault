@@ -46,7 +46,7 @@ class MessageController extends Controller {
 					return ($message->getId() === $attachment->getMessageId());
 				});
 
-				if(count($files)) $message->setAttachments($files);
+				if(count($files)) $message->setAttachments(array_values($files));
 			}
 		}
 

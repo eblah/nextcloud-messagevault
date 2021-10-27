@@ -3,7 +3,7 @@
 		<div v-if="body !== null" class="message-text">
 			{{ body }}
 		</div>
-		<div v-else class="attachment">
+		<div v-if="attachments" class="attachment">
 			<Attachment v-for="file in attachments"
 									:key="file.id"
 									:filetype="file.filetype"
@@ -36,7 +36,7 @@ export default {
 		received: Number,
 		timestamp: Number,
 		addressId: [Number, null],
-		attachments: [Array, null],
+		attachments: Array,
 		combined: Boolean,
 	},
 	data() {
