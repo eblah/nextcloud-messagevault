@@ -40,7 +40,7 @@ class PageController extends Controller {
 	public function index() {
 		Util::addScript('messagevault', 'messagevault-main');
 
-		return new TemplateResponse('messagevault', 'index');  // templates/index.php
+		return new TemplateResponse('messagevault', 'index');
 	}
 
 	/**
