@@ -9,7 +9,8 @@
 						:key="thread.id"
 						:title="thread.name"
 						:class="{active: activeThreadId === thread.id}"
-						@click="activeThreadId = thread.id">
+														 :to="{name: 'thread', params: { threadId: thread.id }}"
+						>
 						<template slot="actions">
 							<ActionButton icon="icon-delete"
 														@click="deleteThread(thread)">
@@ -27,7 +28,10 @@
 			</template>
 		</AppNavigation>
 		<AppContent :class="{ 'icon-loading': loading }">
-			<Thread v-if="activeThreadId" :id="activeThreadId" :key="activeThreadId" />
+			<Thread v-if="activeThreadId"
+							:key="activeThreadId"
+							:id="activeThreadId"
+							:startPage="activePageNumber" />
 			<div v-else>
 				<div v-if="threadList.length || loading" id="emptycontent">
 					<div class="icon-file" />
@@ -58,9 +62,9 @@ import AppNavigation from '@nextcloud/vue/dist/Components/AppNavigation';
 import AppNavigationItem from '@nextcloud/vue/dist/Components/AppNavigationItem';
 import ActionButton from '@nextcloud/vue/dist/Components/ActionButton';
 import AppNavigationSettings from '@nextcloud/vue/dist/Components/AppNavigationSettings';
-import Thread from './Views/Thread';
-import SettingsConfig from './Settings/Config';
-import SettingsImport from './Settings/Import';
+import Thread from './Thread';
+import SettingsConfig from '../Settings/Config';
+import SettingsImport from '../Settings/Import';
 import AppNavigationCaption from '@nextcloud/vue/dist/Components/AppNavigationCaption';
 
 import '@nextcloud/dialogs/styles/toast.scss';
@@ -81,11 +85,16 @@ export default {
 		SettingsConfig,
 		SettingsImport,
 	},
+	props: {
+		threadId: [String, Number, null],
+		pageNumber: [String, Number, null],
+	},
 	data() {
 		return {
 			threadList: [],
 			loading: true,
 			activeThreadId: null,
+			activePageNumber: null,
 		};
 	},
 	computed: {
@@ -100,11 +109,27 @@ export default {
 
 			const response = await axios.get(generateUrl('/apps/messagevault/thread'));
 			this.threadList = this.compileAddress(response.data);
+
+			if (this.threadId) this.activeThreadId = parseInt(this.threadId);
+			if (this.pageNumber) this.activePageNumber = parseInt(this.pageNumber);
 		} catch (e) {
 			console.error(e);
 			showError(t(this.name, 'Could not load threads.'));
 		}
 		this.loading = false;
+	},
+
+	watch: {
+		$route(to, from) {
+			if (to.name === 'thread' && to.params.threadId) {
+				this.activeThreadId = parseInt(to.params.threadId);
+				if (to.params.pageNumber) {
+					this.activePageNumber = parseInt(to.params.pageNumber);
+				} else {
+					this.activePageNumber = null;
+				}
+			}
+		}
 	},
 
 	methods: {

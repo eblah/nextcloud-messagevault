@@ -8,7 +8,7 @@
 
 			<div class="message-container" :class="{ 'icon-loading': loading }">
 				<MessageList :key="details.id"
-										 :page="1"
+										 :page="startPage"
 										 :thread-id="details.id"
 										 :total="details.total" />
 			</div>
@@ -28,6 +28,10 @@ export default {
 	},
 	props: {
 		id: Number,
+		startPage: {
+			default: 1,
+			type: Number,
+		},
 	},
 	data() {
 		return {

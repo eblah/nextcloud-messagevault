@@ -59,7 +59,7 @@ export default {
 	},
 
 	beforeMount() {
-		const page = this.page - 1;
+		const page = (this.page || 1)  - 1;
 		this.pagination.top = page;
 		this.pagination.bottom = page || 1; // This will subtract on first load
 	},
