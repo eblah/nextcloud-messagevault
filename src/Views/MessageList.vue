@@ -43,6 +43,10 @@ export default {
 			type: Number,
 		},
 		total: Number,
+		maxPagesInViewport: {
+			default: 4,
+			type: Number,
+		},
 	},
 	data() {
 		return {
@@ -59,7 +63,7 @@ export default {
 	},
 
 	beforeMount() {
-		const page = (this.page || 1)  - 1;
+		const page = (this.page || 1) - 1;
 		this.pagination.top = page;
 		this.pagination.bottom = page || 1; // This will subtract on first load
 	},
@@ -80,7 +84,15 @@ export default {
 			}
 
 			if (this._currentScrollPosition) {
-				this.$el.scrollTop = this.$el.scrollHeight - this._currentScrollPosition + this.$el.scrollTop;
+				if (this._lastDirection === 'top') {
+					this.$el.scrollTop = this.$el.scrollHeight - this._currentScrollPosition + this.$el.scrollTop;
+				}
+
+				this.cleanup(this._lastDirection);
+			}
+			if (this._cleanupScrollPosition) {
+				this.$el.scrollTop = this.$el.scrollHeight - this._cleanupScrollPosition + this.$el.scrollTop;
+				this._cleanupScrollPosition = null;
 			}
 			this._currentScrollPosition = null;
 		});
@@ -91,7 +103,7 @@ export default {
 			if (this.loading && direction !== 'first') return false;
 
 			const loadPos = this.getLoadPosition(direction);
-			if (this.total <= loadPos * this.pageMaxPer) return false;
+			if (loadPos === null) return false;
 
 			this.loading = true;
 
@@ -99,43 +111,56 @@ export default {
 
 			if (direction === 'top') {
 				// Save current scroll position
-				this._currentScrollPosition = this.$el.scrollHeight;
 				response.data.forEach((msg) => {
 					this.messages.unshift(msg);
 				});
 			} else {
 				response.data.reverse();
-				this.messages = response.data;
+				response.data.forEach((msg) => {
+					this.messages.push(msg);
+				});
 			}
 
-			// @todo cleanup messages outside of the viewport?
-			this.cleanup(direction);
-
+			if (direction !== 'first') {
+				this._currentScrollPosition = this.$el.scrollHeight;
+				this._lastDirection = direction;
+			}
 			this.loading = false;
 		},
 
 		cleanup(dir) {
-			if (this.messages.length > 200 && dir === 'top') {
-				// this.messages.splice(200, this.messages.length - 200);
+			this._cleanupScrollPosition = this.$el.scrollHeight;
+			const max = this.maxPagesInViewport * this.pageMaxPer;
+
+			if (this.messages.length <= max) return;
+			const del = this.messages.length - max;
+
+			if (dir === 'top') {
+				++this.pagination.bottom;
+				this.messages.splice(max, del);
+			} else {
+				--this.pagination.top;
+				this.messages.splice(0, del);
 			}
 		},
 
 		watchScroll() {
 			this.$el.onscroll = (() => {
-				// let top = this.$refs.messageList.scrollTop;// this.$refs.messageList.offsetHeight;
+				const h = this.$el.scrollHeight - this.$el.offsetHeight;
 				if (this.$el.scrollTop < 150 && this.$el.scrollTop > 0) this.loadMessages('top');
-				// @todo also find the bottom
-				// if(this.$refs.messageList.scrollTop < 50 && this.$refs.messageList.scrollTop > 0) console.log('load moar');
+				else if (this.$el.scrollTop > (h - 150) && this.$el.scrollTop < h) {
+					this.loadMessages('bottom');
+				}
 			});
 		},
 
 		getLoadPosition(position) {
 			if (position === 'top') {
-				this.pagination.top += 1;
-				return this.pagination.top;
+				if (this.total <= (this.pagination.top + 1) * this.pageMaxPer) return null;
+				return ++this.pagination.top;
 			} else {
-				this.pagination.bottom -= 1;
-				return this.pagination.bottom;
+				if ((this.pagination.bottom - 1) === -1) return null;
+				return --this.pagination.bottom;
 			}
 		},
 	},

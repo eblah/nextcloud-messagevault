@@ -1,10 +1,10 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import { generateUrl } from '@nextcloud/router'
+import Vue from 'vue';
+import Router from 'vue-router';
+import { generateUrl } from '@nextcloud/router';
 
-import MessageVault from '../Views/MessageVault'
+import MessageVault from '../Views/MessageVault';
 
-Vue.use(Router)
+Vue.use(Router);
 
 export default new Router({
 	mode: 'history',
@@ -28,4 +28,4 @@ export default new Router({
 			},
 		],
 	}],
-})
+});

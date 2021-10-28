@@ -3,7 +3,7 @@ import { generateFilePath } from '@nextcloud/router';
 import Vue from 'vue';
 import App from './MessageVaultRoot';
 import Address from './Components/Address';
-import router from './Router'
+import router from './Router';
 
 // eslint-disable-next-line
 __webpack_public_path__ = generateFilePath(appName, '', 'js/');

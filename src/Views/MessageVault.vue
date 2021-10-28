@@ -9,8 +9,7 @@
 						:key="thread.id"
 						:title="thread.name"
 						:class="{active: activeThreadId === thread.id}"
-														 :to="{name: 'thread', params: { threadId: thread.id }}"
-						>
+						:to="{name: 'thread', params: { threadId: thread.id }}">
 						<template slot="actions">
 							<ActionButton icon="icon-delete"
 														@click="deleteThread(thread)">
@@ -29,9 +28,9 @@
 		</AppNavigation>
 		<AppContent :class="{ 'icon-loading': loading }">
 			<Thread v-if="activeThreadId"
-							:key="activeThreadId"
 							:id="activeThreadId"
-							:startPage="activePageNumber" />
+							:key="activeThreadId"
+							:start-page="activePageNumber" />
 			<div v-else>
 				<div v-if="threadList.length || loading" id="emptycontent">
 					<div class="icon-file" />
@@ -73,7 +72,7 @@ import { showError } from '@nextcloud/dialogs';
 import axios from '@nextcloud/axios';
 
 export default {
-	name: 'App',
+	name: 'MessageVault',
 	components: {
 		AppContent,
 		AppNavigation,
@@ -100,6 +99,19 @@ export default {
 	computed: {
 	},
 
+	watch: {
+		$route(to, from) {
+			if (to.name === 'thread' && to.params.threadId) {
+				this.activeThreadId = parseInt(to.params.threadId);
+				if (to.params.pageNumber) {
+					this.activePageNumber = parseInt(to.params.pageNumber);
+				} else {
+					this.activePageNumber = null;
+				}
+			}
+		},
+	},
+
 	/**
 	 * Fetch list of notes when the component is loaded
 	 */
@@ -117,19 +129,6 @@ export default {
 			showError(t(this.name, 'Could not load threads.'));
 		}
 		this.loading = false;
-	},
-
-	watch: {
-		$route(to, from) {
-			if (to.name === 'thread' && to.params.threadId) {
-				this.activeThreadId = parseInt(to.params.threadId);
-				if (to.params.pageNumber) {
-					this.activePageNumber = parseInt(to.params.pageNumber);
-				} else {
-					this.activePageNumber = null;
-				}
-			}
-		}
 	},
 
 	methods: {
