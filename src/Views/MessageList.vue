@@ -2,14 +2,13 @@
 	<div class="message-list">
 		<div :class="{ 'icon-loading': loading }">
 			<div v-if="messages.length">
-				<div v-for="message in messages" :key="message.id">
-					<MessageItem :key="message.id"
-											 :body="message.body"
-											 :attachments="message.attachments"
-											 :timestamp="message.timestamp"
-											 :address-id="message.addressId"
-											 :received="message.received" />
-				</div>
+				<MessageItem  v-for="message in messages"
+											:key="message.id"
+											:body="message.body"
+											:attachments="message.attachments"
+											:timestamp="message.timestamp"
+											:address-id="message.addressId"
+											:received="message.received" />
 			</div>
 			<div v-else-if="loading">
 				Loading...
@@ -133,14 +132,19 @@ export default {
 			const max = this.maxPagesInViewport * this.pageMaxPer;
 
 			if (this.messages.length <= max) return;
-			const del = this.messages.length - max;
+			const remainder = this.messages.length % this.pageMaxPer;
+			const knockoff = remainder || this.pageMaxPer;
+
+			const start = remainder > 0
+				? (this.pageMaxPer * (this.maxPagesInViewport - 1)) + remainder
+				: max;
 
 			if (dir === 'top') {
 				++this.pagination.bottom;
-				this.messages.splice(max, del);
+				this.messages.splice(start, this.pageMaxPer);
 			} else {
 				--this.pagination.top;
-				this.messages.splice(0, del);
+				this.messages.splice(0, knockoff);
 			}
 		},
 
