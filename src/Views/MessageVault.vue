@@ -18,7 +18,8 @@
 						</template>
 					</AppNavigationItem>
 				</div>
-				<AppNavigationCaption v-else :title="t('messagevault', 'No messages have been imported.')" />
+				<AppNavigationCaption v-else
+					:title="t('messagevault', 'No messages have been imported.')" />
 			</template>
 			<template #footer>
 				<AppNavigationSettings>
@@ -31,23 +32,30 @@
 							:id="activeThreadId"
 							:key="activeThreadId"
 							:start-page="activePageNumber" />
-			<div v-else>
-				<div v-if="threadList.length || loading" id="emptycontent">
-					<div class="icon-file" />
+			<div v-else id="emptycontent">
+				<div v-if="threadList.length || loading">
+					<div class="icon-message-vault" />
 					<h2>{{ t('messagevault', 'Select a message thread to view...') }}</h2>
 				</div>
 				<div v-else class="section">
-					<h2>{{ t('messagevault', 'Getting Started ') }}</h2>
+					<div class="icon-message-vault" />
+					<h2>{{ t('messagevault', 'Welcome Message Vault') }}</h2>
 					<p>
-						{{ t('messagevault', 'To get started, first go to Settings and add any addresses that you have used to send \
-							messages. After that, import your first backup. The file will be imported on the next jobs run, usually about five minutes.') }}
+						{{ t('messagevault', 'Message Vault currently supports backups created using the Android App') }}
+						<a href="https://play.google.com/store/apps/details?id=com.riteshsahu.SMSBackupRestore&hl=en_US&gl=US" target="_blank">XML Backup and Restore</a>.
+					</p>
+					<h3>{{ t('messagevault', 'Getting Started') }}</h3>
+					<p>
+						{{ t('messagevault', 'To get started, go to Settings and add any addresses that you have used to send \
+							messages. After that, you can import your first backup. The file will be imported on the next Nextcloud job run, usually less than five minutes.') }}
 					</p>
 					<p>
-						{{ t('messagevault', 'It could take several hours to import all messages, depending on the size of the backup.') }}
+						{{ t('messagevault', 'It could take many hours to import all messages, depending on the size of the backup and if attachments were added to the backups.') }}
 					</p>
+					<h3>{{ t('messagevault', 'Next Steps') }}</h3>
 					<p>
-						{{ t('messagevault', 'You can use a workflow to automatically import backups into the system in the future. It is recommended to \
-						watch a specific folder and import. If a file is not recognized as XML it will not be imported.') }}
+						{{ t('messagevault', 'After your initial import, you can use a workflow to automatically import new backups.\
+						If a file is not recognized as XML it will not be imported.') }}
 					</p>
 				</div>
 			</div>
@@ -175,3 +183,4 @@ export default {
 	},
 };
 </script>
+

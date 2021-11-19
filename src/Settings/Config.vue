@@ -15,21 +15,12 @@
 								 v-model="config.myAddress"
 								 type="text"
 								 class="app-settings"><br>
-					<em>{{ t('messagevault', 'Backups do not always have your mobile number as the outgoing address. \
-						Enter your phone number here to ensure they are excluded. Separate additional numbers by a comma.\
-						Since addresses can be numbers or email addresses, nearly anything can be accepted here.') }}</em>
-				</div>
-				<div>
-					<label for="backupDir">{{ t('messagevault', 'Backup folder') }}</label>
-					<input id="backupDir"
-								 v-model="config.backupDir"
-								 type="text"
-								 class="app-settings">
-					<button @click="chooseFolder">
-						Choose
-					</button>
-					<br>
-					<em>{{ t('messagevault', 'Path to where your XML backups are being uploaded from your mobile device.') }}</em>
+					<em>{{ t('messagevault', 'Backups do not always contain your mobile number as the outgoing address. \
+						This can cause issues with double or incomplete messages since there is no way to accurately obtain your \
+						address from the backup file.') }}</em><br>
+					<em>{{ t('messagevault', 'Separate additional addresses by a comma, such as in cases with multiple \
+						phone numbers from different phones or different SIMs. \
+						Since addresses can be numbers or email addresses, anything can be accepted here.') }}</em>
 				</div>
 				<br>
 				<button @click="saveSettings">

@@ -8,7 +8,10 @@
             "name": "Justin Osborne"
         }
     ],
-    "require": {},
+    "require": {
+      "ext-simplexml": "*",
+      "ext-xmlreader": "*"
+    },
     "require-dev": {
     }
 }
