@@ -47,10 +47,12 @@
 					<h3>{{ t('messagevault', 'Getting Started') }}</h3>
 					<p>
 						{{ t('messagevault', 'To get started, go to Settings and add any addresses that you have used to send \
-							messages. After that, you can import your first backup. The file will be imported on the next Nextcloud job run, usually less than five minutes.') }}
+							messages. After that, you can import your first backup. The file will be imported on the next Nextcloud\
+							job run, usually less than five minutes.') }}
 					</p>
 					<p>
-						{{ t('messagevault', 'It could take many hours to import all messages, depending on the size of the backup and if attachments were added to the backups.') }}
+						{{ t('messagevault', 'It could take many hours to import all messages, depending on the size of the backup \
+						and if attachments were added to the backups.') }}
 					</p>
 					<h3>{{ t('messagevault', 'Next Steps') }}</h3>
 					<p>
@@ -183,4 +185,3 @@ export default {
 	},
 };
 </script>
-
