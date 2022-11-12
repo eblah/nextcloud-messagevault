@@ -29,14 +29,15 @@ class MessageController extends Controller {
 	}
 
 	/**
+     * @NoCSRFRequired
 	 * @NoAdminRequired
 	 */
-	public function index(int $thread_id, int $position = 0, $limit = 100): DataResponse {
+	public function index(int $thread_id, int $position = 0, $limit = 100, string $search = null): DataResponse {
 		if(!$this->thread_service->hasPermission($this->user, $thread_id)) {
 			throw new ForbiddenException('You do not have permission to view this message.');
 		}
 
-		$messages = $this->service->findAll($thread_id, $position, $limit);
+		$messages = $this->service->findAll($thread_id, $position, $limit, $search);
 
 		if(count($messages)) {
 			$attachments = $this->attachment_service->getAttachments($this->user, $thread_id, array_column($messages, 'id'));

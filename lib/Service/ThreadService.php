@@ -35,7 +35,7 @@ class ThreadService {
 		return !empty($info);
 	}
 
-	public function getThreadDetails(IUserSession $user, int $id): array {
+	public function getThreadDetails(IUserSession $user, int $id, string $search = null): array {
 		$details = $this->thread_mapper->find($id, $user->getUser());
 		if(empty($details)) return [];
 
@@ -43,7 +43,7 @@ class ThreadService {
 			'id' => $details[0]->getId(),
 			'name' => $details[0]->getName(),
 			'addressIds' => $this->thread_address_mapper->findAllAddresses($id),
-			'total' => $this->message_mapper->getMessageCount($id)
+			'total' => $this->message_mapper->getMessageCount($id, $search)
 		];
 	}
 

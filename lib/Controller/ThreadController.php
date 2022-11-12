@@ -32,10 +32,11 @@ class ThreadController extends Controller {
 	}
 
 	/**
+     * @NoCSRFRequired
 	 * @NoAdminRequired
 	 */
-	public function show(int $id): DataResponse {
-		return new DataResponse($this->service->getThreadDetails($this->user_session, $id));
+	public function show(int $id, string $search = null): DataResponse {
+		return new DataResponse($this->service->getThreadDetails($this->user_session, $id, $search));
 	}
 
 	/**

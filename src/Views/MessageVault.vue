@@ -1,33 +1,33 @@
 <template>
-	<div id="content" class="app-messagevault">
-		<AppNavigation :class="{ 'icon-loading': loading }">
-			<SettingsImport />
+  <NcContent app-name="messagevault">
+		<NcAppNavigation :class="{ 'icon-loading': loading }">
+      <template #list>
+			  <SettingsImport />
 
-			<template #list>
 				<div v-if="threadList.length">
-					<AppNavigationItem v-for="thread in threadList"
+					<NcAppNavigationItem v-for="thread in threadList"
 						:key="thread.id"
 						:title="thread.name"
 						:class="{active: activeThreadId === thread.id}"
 						:to="{name: 'thread', params: { threadId: thread.id }}">
 						<template slot="actions">
-							<ActionButton icon="icon-delete"
+							<NcActionButton icon="icon-delete"
 														@click="deleteThread(thread)">
 								{{ t('messagevault', 'Delete Thread') }}
-							</ActionButton>
+							</NcActionButton>
 						</template>
-					</AppNavigationItem>
+					</NcAppNavigationItem>
 				</div>
-				<AppNavigationCaption v-else
+				<NcAppNavigationCaption v-else
 					:title="t('messagevault', 'No messages have been imported.')" />
 			</template>
 			<template #footer>
-				<AppNavigationSettings>
-					<SettingsConfig />
-				</AppNavigationSettings>
+        <NcAppNavigationItem :title="t('messagevault', 'Message Vault settings')" @click="openSettings()">
+          <Cog slot="icon" :size="20" />
+        </NcAppNavigationItem>
 			</template>
-		</AppNavigation>
-		<AppContent :class="{ 'icon-loading': loading }">
+		</NcAppNavigation>
+		<NcAppContent :class="{ 'icon-loading': loading }">
 			<Thread v-if="activeThreadId"
 							:id="activeThreadId"
 							:key="activeThreadId"
@@ -61,20 +61,25 @@
 					</p>
 				</div>
 			</div>
-		</AppContent>
-	</div>
+		</NcAppContent>
+
+    <SettingsConfig :open.sync="openedSettings" />
+  </NcContent>
 </template>
 
 <script>
-import AppContent from '@nextcloud/vue/dist/Components/AppContent';
-import AppNavigation from '@nextcloud/vue/dist/Components/AppNavigation';
-import AppNavigationItem from '@nextcloud/vue/dist/Components/AppNavigationItem';
-import ActionButton from '@nextcloud/vue/dist/Components/ActionButton';
-import AppNavigationSettings from '@nextcloud/vue/dist/Components/AppNavigationSettings';
+import { NcContent,
+  NcAppContent,
+  NcAppNavigation,
+  NcAppNavigationItem,
+  NcActionButton,
+  NcAppNavigationSettings,
+  NcAppNavigationCaption } from '@nextcloud/vue';
 import Thread from './Thread';
 import SettingsConfig from '../Settings/Config';
 import SettingsImport from '../Settings/Import';
-import AppNavigationCaption from '@nextcloud/vue/dist/Components/AppNavigationCaption';
+
+import Cog from 'vue-material-design-icons/Cog.vue';
 
 import '@nextcloud/dialogs/styles/toast.scss';
 import { generateUrl } from '@nextcloud/router';
@@ -84,12 +89,14 @@ import axios from '@nextcloud/axios';
 export default {
 	name: 'MessageVault',
 	components: {
-		AppContent,
-		AppNavigation,
-		AppNavigationItem,
-		AppNavigationSettings,
-		AppNavigationCaption,
-		ActionButton,
+    NcContent,
+		NcAppContent,
+		NcAppNavigation,
+		NcAppNavigationItem,
+		NcAppNavigationSettings,
+		NcAppNavigationCaption,
+		NcActionButton,
+    Cog,
 		Thread,
 		SettingsConfig,
 		SettingsImport,
@@ -97,6 +104,7 @@ export default {
 	props: {
 		threadId: [String, Number, null],
 		pageNumber: [String, Number, null],
+    searchTerm: [String, String, null]
 	},
 	data() {
 		return {
@@ -104,6 +112,7 @@ export default {
 			loading: true,
 			activeThreadId: null,
 			activePageNumber: null,
+      openedSettings: false,
 		};
 	},
 	computed: {
@@ -135,13 +144,16 @@ export default {
 			if (this.threadId) this.activeThreadId = parseInt(this.threadId);
 			if (this.pageNumber) this.activePageNumber = parseInt(this.pageNumber);
 		} catch (e) {
-			console.error(e);
 			showError(t(this.name, 'Could not load threads.'));
 		}
 		this.loading = false;
 	},
 
 	methods: {
+    openSettings() {
+      this.openedSettings = true;
+    },
+
 		compileAddress(response) {
 			response.map(x => {
 				if (x.name === null) {

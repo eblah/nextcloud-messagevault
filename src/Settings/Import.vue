@@ -1,15 +1,18 @@
 <template>
-	<AppNavigationNew :text="t('messagevault', 'Import a new backup file')"
-										:disabled="false"
-										button-class="icon-upload"
-										@click="openPicker" />
+  <NcAppNavigationItem :title="t('messagevault', 'Import a new backup file')"
+    :disabled="false"
+    button-class="icon-upload"
+    @click="openPicker">
+    <Upload slot="icon" :size="20" />
+  </NcAppNavigationItem>
 </template>
 
 <script>
 import { getFilePickerBuilder, showError, showSuccess } from '@nextcloud/dialogs';
 import axios from '@nextcloud/axios';
 import { generateUrl } from '@nextcloud/router';
-import AppNavigationNew from '@nextcloud/vue/dist/Components/AppNavigationNew';
+import { NcAppNavigationItem } from '@nextcloud/vue';
+import Upload from 'vue-material-design-icons/Upload.vue';
 
 const picker = getFilePickerBuilder(t('messagevault', 'Choose a XML backup to import'))
 	.setMultiSelect(false)
@@ -22,7 +25,8 @@ const picker = getFilePickerBuilder(t('messagevault', 'Choose a XML backup to im
 export default {
 	name: 'Import',
 	components: {
-		AppNavigationNew,
+		NcAppNavigationItem,
+    Upload,
 	},
 	methods: {
 		async processLocalFile(path) {

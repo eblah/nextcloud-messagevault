@@ -1,18 +1,24 @@
 <template>
 	<div class="section">
 		<div v-if="details">
-			<h2>{{ title }}</h2>
-			<div class="stats">
-				{{ n('messagevault', '{total} message', '{total} messages', details.total, {total: details.total}) }}
-			</div>
+      <div class="info">
+        <h2>{{ title }}</h2>
+        <div class="stats">
+          {{ n('messagevault', '{total} message', '{total} messages', total, {total: details.total}) }}
+        </div>
+      </div>
+      <div class="search">
+        <input v-model="threadSearch" @input="threadSearch" type="text" :placeholder="t('messagevault', 'Search this thread…')">
+      </div>
+    </div>
 
-			<div class="message-container" :class="{ 'icon-loading': loading }">
-				<MessageList :key="details.id"
-										 :page="startPage"
-										 :thread-id="details.id"
-										 :total="details.total" />
-			</div>
-		</div>
+    <div class="message-container" :class="{ 'icon-loading': loading }">
+      <MessageList :key="details.id+threadSearch"
+                   :page="startPage"
+                   :thread-id="details.id"
+                   :search="threadSearch"
+                   :total="details.total" />
+    </div>
 	</div>
 </template>
 
@@ -37,6 +43,8 @@ export default {
 		return {
 			details: null,
 			loading: true,
+      total: 0,
+      threadSearch: this.$route.params.searchTerm || '',
 		};
 	},
 	computed: {
@@ -47,14 +55,32 @@ export default {
 	},
 
 	async mounted() {
-		const response = await axios.get(generateUrl(`/apps/messagevault/thread/${this.id}`));
-		this.details = response.data;
-		this.loading = false;
+    await this.getMetadata()
 	},
 
 	methods: {
-
+    async getMetadata() {
+      this.loading = true;
+      const response = await axios.get(generateUrl(`/apps/messagevault/thread/${this.id}?search=${this.threadSearch}`));
+      this.details = response.data;
+      this.total = this.details.total
+      this.loading = false;
+    }
 	},
+
+  watch: {
+    $route(to, from) {
+      if(to.name === 'thread-search') {
+        this.getMetadata()
+      }
+    },
+
+    async threadSearch(new_search) {
+     // this.$emit('startPage', 0
+      this.$router.push({ path: `/t/${this.id}/s/${new_search}` })
+      await this.getMetadata()
+    }
+  }
 };
 </script>
 <style scoped>
@@ -62,8 +88,6 @@ export default {
 	position: absolute;
 	top: 65px;
 	bottom: 10px;
-	left: 25px;
-	right: 25px;
 }
 
 .section {
@@ -73,5 +97,13 @@ export default {
 .stats {
 	margin-top: -15px;
 	font-size: 11px;
+}
+
+.info {
+  float: left
+}
+
+.search {
+  float: right
 }
 </style>

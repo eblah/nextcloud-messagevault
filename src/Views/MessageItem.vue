@@ -61,6 +61,9 @@ export default {
 $message-recv-bg: #ddd;
 $message-sent-bg: #aec4d6;
 
+$message-recv-bg-dark: #323232;
+$message-sent-bg-dark: #424242;
+
 .message-item {
 	display: flow-root;
 }
@@ -71,6 +74,10 @@ $message-sent-bg: #aec4d6;
 	background-color: $message-recv-bg;
 	float: left;
 	border-radius: 10px;
+
+  @media (prefers-color-scheme: dark) {
+    background-color: $message-recv-bg-dark;
+  }
 }
 
 .message-address {
@@ -82,6 +89,10 @@ $message-sent-bg: #aec4d6;
 .message-sent {
 	& .message-text {
 		background-color: $message-sent-bg;
+
+    @media (prefers-color-scheme: dark) {
+      background-color: $message-sent-bg-dark;
+    }
 	}
 
 	& .message-address,

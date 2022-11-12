@@ -36,7 +36,8 @@ export default {
 .attachment img {
 	max-width: 400px;
 	max-height: 400px;
-	width: auto;
+	height: auto;
+  object-fit: contain;
 }
 
 .attachment img,

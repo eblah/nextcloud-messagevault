@@ -39,7 +39,7 @@ class MessageMapper extends QBMapper {
 	/**
 	 * @return Message[]
 	 */
-	public function findAll($thread_id, $page, $limit): array {
+	public function findAll($thread_id, $page, $limit, string $search = null): array {
 		$qb = $this->db->getQueryBuilder();
 
 		$select = $qb->select('id', 'm.address_id', 'm.timestamp', 'm.received', 'm.body')
@@ -51,8 +51,21 @@ class MessageMapper extends QBMapper {
 			->setMaxResults($limit)
 			->setFirstResult($page * $limit);
 
+		$select = $this->searchFilter($qb, $select, $search);
+
 		return $this->findEntities($select);
 	}
+
+    private function searchFilter($qb, $select, $search) {
+        if($search !== '' && $search !== null) {
+
+            $select->andWhere(
+                $qb->expr()->like('body', $qb->createNamedParameter('%' . $search . '%'))
+            );
+        }
+
+        return $select;
+    }
 
 	/**
 	 * @return Message[]
@@ -73,7 +86,7 @@ class MessageMapper extends QBMapper {
 		return array_column($messages, 'id');
 	}
 
-	public function getMessageCount(int $thread_id): int {
+	public function getMessageCount(int $thread_id, string $search = null): int {
 		$qb = $this->db->getQueryBuilder();
 
 		$select = $qb->select($qb->createFunction('COUNT(*)'))
@@ -81,6 +94,9 @@ class MessageMapper extends QBMapper {
 			->where(
 				$qb->expr()->eq('thread_id', $qb->createNamedParameter($thread_id))
 			);
+
+        $select = $this->searchFilter($qb, $select, $search);
+
 		$result = $select->executeQuery();
 		$cnt = $result->fetchColumn();
 		$result->closeCursor();

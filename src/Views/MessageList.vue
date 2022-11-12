@@ -46,6 +46,7 @@ export default {
 			default: 4,
 			type: Number,
 		},
+    search: String,
 	},
 	data() {
 		return {
@@ -106,7 +107,7 @@ export default {
 
 			this.loading = true;
 
-			const response = await axios.get(generateUrl(`/apps/messagevault/thread/${this.threadId}/messages?position=${loadPos}&limit=${this.pageMaxPer}`));
+			const response = await axios.get(generateUrl(`/apps/messagevault/thread/${this.threadId}/messages?position=${loadPos}&limit=${this.pageMaxPer}&search=${this.search}`));
 
 			if (direction === 'top') {
 				// Save current scroll position
@@ -168,6 +169,15 @@ export default {
 			}
 		},
 	},
+
+  watch: {
+    // async search(nef) {
+    //   this.firstLoad = true;
+    //   this.messages = [];
+    //   this.lastMessage = null;
+    //   await this.loadMessages()
+    // }
+  }
 };
 </script>
 
