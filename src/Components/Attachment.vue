@@ -1,15 +1,21 @@
 <template>
 	<div class="attachment">
-		<img v-if="filetype.match('image')"
+		<a :href="url"
+			:download="name">
+			<img v-if="filetype.match('image')"
 				 :src="url"
 				 :height="height"
 				 :width="width">
-		<video v-else-if="filetype.match('video')"
-					 width="400"
-					 controls>
-			<source :src="url"
-							:type="filetype">
-		</video>
+			<video v-else-if="filetype.match('video')"
+						width="400"
+						controls>
+				<source :src="url"
+								:type="filetype">
+			</video>
+			<span v-else>
+				{name}
+			</span>
+		</a>
 	</div>
 </template>
 
@@ -21,6 +27,7 @@ export default {
 		url: String,
 		height: [Number, null],
 		width: [Number, null],
+		name: String,
 	},
 	data() {
 		return {
@@ -37,7 +44,7 @@ export default {
 	max-width: 400px;
 	max-height: 400px;
 	height: auto;
-  object-fit: contain;
+	object-fit: contain;
 }
 
 .attachment img,

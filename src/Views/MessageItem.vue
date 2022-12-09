@@ -8,6 +8,7 @@
 									:key="file.id"
 									:filetype="file.filetype"
 									:url="file.url"
+									:name="file.name"
 									:width="file.width"
 									:height="file.height" />
 		</div>
