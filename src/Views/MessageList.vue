@@ -46,7 +46,7 @@ export default {
 			default: 4,
 			type: Number,
 		},
-    search: String,
+		search: String,
 	},
 	data() {
 		return {
@@ -170,14 +170,14 @@ export default {
 		},
 	},
 
-  watch: {
-    // async search(nef) {
-    //   this.firstLoad = true;
-    //   this.messages = [];
-    //   this.lastMessage = null;
-    //   await this.loadMessages()
-    // }
-  }
+	watch: {
+		// async search(nef) {
+		//   this.firstLoad = true;
+		//   this.messages = [];
+		//   this.lastMessage = null;
+		//   await this.loadMessages()
+		// }
+	}
 };
 </script>
 

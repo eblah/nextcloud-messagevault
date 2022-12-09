@@ -7,7 +7,7 @@
           {{ n('messagevault', '{total} message', '{total} messages', total, {total: details.total}) }}
         </div>
       </div>
-      <div class="search">
+      <div class="search" v-if="searchEnabled">
         <input v-model="threadSearch" @input="threadSearch" type="text" :placeholder="t('messagevault', 'Search this thread…')">
       </div>
     </div>
@@ -38,13 +38,14 @@ export default {
 			default: 1,
 			type: Number,
 		},
+		searchEnabled: false,
 	},
 	data() {
 		return {
 			details: null,
 			loading: true,
-      total: 0,
-      threadSearch: this.$route.params.searchTerm || '',
+			total: 0,
+			threadSearch: this.$route.params.searchTerm || '',
 		};
 	},
 	computed: {
@@ -55,32 +56,31 @@ export default {
 	},
 
 	async mounted() {
-    await this.getMetadata()
+		await this.getMetadata()
 	},
 
 	methods: {
-    async getMetadata() {
-      this.loading = true;
-      const response = await axios.get(generateUrl(`/apps/messagevault/thread/${this.id}?search=${this.threadSearch}`));
-      this.details = response.data;
-      this.total = this.details.total
-      this.loading = false;
-    }
+		async getMetadata() {
+			this.loading = true;
+			const response = await axios.get(generateUrl(`/apps/messagevault/thread/${this.id}?search=${this.threadSearch}`));
+			this.details = response.data;
+			this.total = this.details.total
+			this.loading = false;
+		}
 	},
 
-  watch: {
-    $route(to, from) {
-      if(to.name === 'thread-search') {
-        this.getMetadata()
-      }
-    },
+	watch: {
+		$route(to, from) {
+			if(to.name === 'thread-search') {
+				this.getMetadata()
+			}
+		},
 
-    async threadSearch(new_search) {
-     // this.$emit('startPage', 0
-      this.$router.push({ path: `/t/${this.id}/s/${new_search}` })
-      await this.getMetadata()
-    }
-  }
+		async threadSearch(new_search) {
+			this.$router.push({ path: `/t/${this.id}/s/${new_search}` })
+			await this.getMetadata()
+		}
+	}
 };
 </script>
 <style scoped>
@@ -100,10 +100,10 @@ export default {
 }
 
 .info {
-  float: left
+	float: left
 }
 
 .search {
-  float: right
+	float: right
 }
 </style>

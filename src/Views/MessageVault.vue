@@ -104,7 +104,7 @@ export default {
 	props: {
 		threadId: [String, Number, null],
 		pageNumber: [String, Number, null],
-    searchTerm: [String, String, null]
+		searchTerm: [String, String, null]
 	},
 	data() {
 		return {
@@ -112,7 +112,7 @@ export default {
 			loading: true,
 			activeThreadId: null,
 			activePageNumber: null,
-      openedSettings: false,
+			openedSettings: false,
 		};
 	},
 	computed: {
@@ -150,9 +150,9 @@ export default {
 	},
 
 	methods: {
-    openSettings() {
-      this.openedSettings = true;
-    },
+		openSettings() {
+		this.openedSettings = true;
+		},
 
 		compileAddress(response) {
 			response.map(x => {
