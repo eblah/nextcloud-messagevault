@@ -129,16 +129,17 @@ source:
 appstore:
 	rm -rf $(appstore_build_directory)
 	mkdir -p $(appstore_build_directory)
+	cd $(project_directory)
 	tar -czvf $(appstore_package_name).tar.gz \
 		-C $(project_directory)/.. \
-		./$(app_name)/README.md \
-		./$(app_name)/COPYING \
-		./$(app_name)/templates \
-		./$(app_name)/lib \
-		./$(app_name)/js \
-		./$(app_name)/css \
-		./$(app_name)/img \
-		./$(app_name)/appinfo
+		$(app_name)/README.md \
+		$(app_name)/COPYING \
+		$(app_name)/templates \
+		$(app_name)/lib \
+		$(app_name)/js \
+		$(app_name)/css \
+		$(app_name)/img \
+		$(app_name)/appinfo
 
 #	tar cvzf $(appstore_package_name).tar.gz \
 #	--exclude="../$(app_name)/build" \
