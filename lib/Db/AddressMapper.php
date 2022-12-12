@@ -3,10 +3,7 @@
 declare(strict_types=1);
 
 /**
- * @copyright 2020 Christoph Wurst <christoph@winzerhof-wurst.at>
- *
- * @author Christoph Wurst <christoph@winzerhof-wurst.at>
- * @author Georg Ehrke <oc.list@georgehrke.com>
+ * @copyright 2022 Justin Osborne <justin@eblah.com>
  *
  * @license GNU AGPL version 3 or any later version
  *
