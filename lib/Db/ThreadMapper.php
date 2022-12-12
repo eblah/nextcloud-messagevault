@@ -47,23 +47,13 @@ class ThreadMapper extends QBMapper {
 		$qb = $this->db->getQueryBuilder();
 
 		$select = $qb->select('t.id', 't.name')
-			->selectAlias(
-				$qb->createFunction('GROUP_CONCAT(ta.address_id)')
-				, 'a'
-			)
 			->from($this->getTableName(), 't')
-			->join('t', ThreadAddressMapper::TABLE_NAME, 'ta', 't.id = ta.thread_id')
 			->where($qb->expr()->eq('t.user_id', $qb->createNamedParameter($user->getUID())))
-			->groupBy('t.id')
 			->orderBy('t.name');
 
 		$result = $select->executeQuery();
 		$threads = [];
 		while($row = $result->fetch()) {
-			$addrs = [];
-			foreach(explode(',', $row['a']) as $a) $addrs[] = (int)$a;
-
-			$row['a'] = $addrs;
 			$row['id'] = (int)$row['id'];
 			$threads[] = $row;
 		}

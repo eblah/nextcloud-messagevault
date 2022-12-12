@@ -51,22 +51,8 @@ class ThreadAddressMapper extends QBMapper {
 	 * @return ThreadAddress[]
 	 */
 	public function findAllAddresses(int $thread_id): array {
-		$qb = $this->db->getQueryBuilder();
-
-		$select = $qb->select('address_id')
-			->from($this->getTableName())
-			->where(
-				$qb->expr()->eq('thread_id', $qb->createNamedParameter($thread_id))
-			);
-		$result = $select->executeQuery();
-
-		$addrs = [];
-		foreach($result->fetchAll() as $a) $addrs[] = (int)$a['address_id'];
-
-		$result->closeCursor();
-
-
-		return $addrs;
+		$addresses = $this->findAddressesByThreadIds([$thread_id]);
+		return current($addresses);
 	}
 
 	public function deleteThread(int $thread_id) {
@@ -76,5 +62,27 @@ class ThreadAddressMapper extends QBMapper {
 				$qb->expr()->eq('thread_id', $qb->createNamedParameter($thread_id))
 			);
 		$qb->execute();
+	}
+
+	public function findAddressesByThreadIds(array $thread_ids): array {
+		$qb = $this->db->getQueryBuilder();
+		$select = $qb->select('*')
+			->from($this->getTableName())
+			->where(
+				$qb->expr()->in('thread_id', $qb->createNamedParameter($thread_ids, $qb::PARAM_INT_ARRAY))
+			);
+		$result = $select->executeQuery();
+
+		$threads = [];
+		while($a = $result->fetch()) {
+			if(!isset($threads[$a['thread_id']])) {
+				$threads[$a['thread_id']] = [];
+			}
+
+			$threads[$a['thread_id']][] = (int)$a['address_id'];
+		}
+		$result->closeCursor();
+
+		return $threads;
 	}
 }

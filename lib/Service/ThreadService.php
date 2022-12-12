@@ -43,7 +43,17 @@ class ThreadService {
 	}
 
 	public function findAll(IUserSession $user): array {
-		return $this->thread_mapper->findAll($user->getUser());
+		$threads = $this->thread_mapper->findAll($user->getUser());
+
+		$address_ids = $this->thread_address_mapper->findAddressesByThreadIds(
+			array_column($threads, 'id')
+		);
+
+		foreach($threads as &$thread) {
+			$thread['a'] = $address_ids[$thread['id']];
+		}
+		unset($thread);
+		return $threads;
 	}
 
 	/**
