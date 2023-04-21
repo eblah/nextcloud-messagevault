@@ -3,14 +3,14 @@
       xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
     <id>messagevault</id>
     <name>Message Vault</name>
-    <summary>Message Vault</summary>
-    <description><![CDATA[Restores XML backups of SMS, RCS, and MMS messages and attachments.]]></description>
-    <version>1.0.2</version>
+    <summary>Store old SMS/MMS/RCS messages from your phone to Nextcloud</summary>
+    <description><![CDATA[Message Vault restores XML backups made with the SMS Backup & Restore Android App. All SMS, RCS, and MMS messages and attachments can be added to the Vault and can be automated using Nextcloud Flows.]]></description>
+    <version>1.0.3</version>
     <licence>agpl</licence>
     <author mail="justin@eblah.com" homepage="https://www.eblah.com">Justin Osborne</author>
     <namespace>MessageVault</namespace>
     <category>organization</category>
-    <category>search</category>
+    <category>workflow</category>
     <category>social</category>
     <category>tools</category>
     <bugs>https://github.com/eblah/nextcloud-messagevault/issues</bugs>

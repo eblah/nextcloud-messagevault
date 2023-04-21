@@ -8,7 +8,9 @@
             "name": "Justin Osborne"
         }
     ],
+    
     "require": {
+      "php": "^8.0",
       "ext-simplexml": "*",
       "ext-xmlreader": "*"
     },
