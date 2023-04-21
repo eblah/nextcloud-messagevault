@@ -118,10 +118,11 @@ class ImportXmlService {
 		$user_folder = $this->storage->getUserFolder($user->getUID());
 
 		try {
-			return $user_folder->getStorage()->getLocalFile(
-				$user_folder->getById($file_id)[0]
-					->getInternalPath()
-			);
+			$int_path = $user_folder->getById($file_id)[0]
+				?->getInternalPath();
+			if($int_path === null) return false;
+
+			return $user_folder->getStorage()->getLocalFile($int_path);
 		} catch(NotFoundException $e) {
 			return false;
 		}
