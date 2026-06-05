@@ -107,7 +107,7 @@ export default {
 <style scoped>
 .message-container {
 	position: absolute;
-	top: 65px;
+	top: 90px;
 	bottom: 10px;
 }
 
