@@ -5,7 +5,7 @@
     <name>Message Vault</name>
     <summary>Store old SMS/MMS/RCS messages from your phone to Nextcloud</summary>
     <description><![CDATA[Message Vault restores XML backups made with the SMS Backup & Restore Android App. All SMS, RCS, and MMS messages and attachments can be added to the Vault and can be automated using Nextcloud Flows.]]></description>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
     <licence>agpl</licence>
     <author mail="justin@eblah.com" homepage="https://www.eblah.com">Justin Osborne</author>
     <namespace>MessageVault</namespace>
